@@ -3,7 +3,7 @@ import roleTransporter from './roles.transporter';
 import roleUpgrader from './roles.upgrader';
 import roleBuilder from './roles.builder';
 
-// TODO eslint, prettier, build to screeps folder
+// TODO eslint, prettier
 // TODO Place for declare and types?
 
 type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder';

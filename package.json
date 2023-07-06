@@ -2,8 +2,9 @@
   "name": "screeps",
   "version": "1.0.0",
   "scripts": {
-    "build": "rm -rf ./build && tsc",
-    "watch": "rm -rf ./build && tsc --watch"
+    "clean": "rm -rf ./build/*",
+    "build": "pnpm run clean && tsc",
+    "watch": "pnpm run clean && tsc --watch"
   },
   "devDependencies": {
     "@types/node": "20.4.0",
