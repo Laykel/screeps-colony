@@ -1,0 +1,13 @@
+{
+  "name": "screeps",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rm -rf ./build && tsc",
+    "watch": ""
+  },
+  "devDependencies": {
+    "@types/node": "20.4.0",
+    "@types/screeps": "3.3.3",
+    "typescript": "5.1.6"
+  }
+}
