@@ -1,5 +1,5 @@
 // TODO
-const findStructure = (creep: Creep, structureType: StructureConstant) => {
+const findStructureInRoom = (creep: Creep, structureType: StructureConstant) => {
   creep.room.find(FIND_STRUCTURES, {filter: (structure) => structure.structureType === structureType})
 }
 

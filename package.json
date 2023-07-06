@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rm -rf ./build && tsc",
-    "watch": ""
+    "watch": "rm -rf ./build && tsc --watch"
   },
   "devDependencies": {
     "@types/node": "20.4.0",

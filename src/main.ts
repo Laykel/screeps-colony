@@ -3,8 +3,8 @@ import roleTransporter from './roles.transporter';
 import roleUpgrader from './roles.upgrader';
 import roleBuilder from './roles.builder';
 
-// TODO tsconfig, eslint, prettier, build to screeps folder
-// TODO Watcher for build, place for declare and types?
+// TODO eslint, prettier, build to screeps folder
+// TODO Place for declare and types?
 
 type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder';
 
