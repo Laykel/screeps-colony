@@ -4,8 +4,8 @@ type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder';
 
 interface CreepMemory {
   role: CreepRole;
-  building: boolean;
-  upgrading: boolean;
+  building?: boolean;
+  upgrading?: boolean;
 }
 
 // interface FlagMemory {}

@@ -1,38 +1,28 @@
-import { runHarvester } from './roles.harvester';
-import roleTransporter from './roles.transporter';
-import roleUpgrader from './roles.upgrader';
-import roleBuilder from './roles.builder';
+import { runSpawnController } from './controller.spawn';
+import { runCreepController } from './controller.creep';
+
+// TODO As soon as level 2 is hit, set up extensions
+// Once extensions are built, the new creeps are better
+// Then, place a container, then roads
+// Maybe the opposite
+
+// TODO Memory clean up
+// TODO Spawn controller calculate body parts
 
 export const loop = () => {
-  const tower = Game.getObjectById('128c8f8e6af5f270d1e774f7' as Id<StructureTower>);
-
-  if (tower) {
-    const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: structure => structure.hits < structure.hitsMax,
-    });
-    if (closestDamagedStructure) {
-      tower.repair(closestDamagedStructure);
-    }
-
-    const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if (closestHostile) {
-      tower.attack(closestHostile);
-    }
+  // Spawn creeps if applicable
+  for (const name in Game.spawns) {
+    const spawn = Game.spawns[name];
+    runSpawnController(spawn, Game.time);
   }
 
+  // Execute creep logic
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
-    if (creep.memory.role == 'harvester') {
-      runHarvester(creep);
-    }
-    if (creep.memory.role == 'transporter') {
-      roleTransporter.run(creep);
-    }
-    if (creep.memory.role == 'upgrader') {
-      roleUpgrader.run(creep);
-    }
-    if (creep.memory.role == 'builder') {
-      roleBuilder.run(creep);
-    }
+    runCreepController(creep);
+  }
+
+  if (Game.time % 20 === 0) {
+    // Run memory clean up code
   }
 };
