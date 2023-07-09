@@ -1,12 +1,12 @@
 import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
+import { findStructureInRoom } from './shared.logic';
 
 // TODO As soon as level 2 is hit, set up extensions
 // Once extensions are built, the new creeps are better
 // Then, place a container, then roads
 // Maybe the opposite
 
-// TODO Memory clean up
 // TODO Spawn controller calculate body parts
 
 export const loop = () => {
@@ -24,13 +24,23 @@ export const loop = () => {
 
   if (Game.time % 20 === 0) {
     // Run memory clean up code
+    for (const name in Memory.creeps) {
+      if (Game.creeps[name] === undefined) {
+        delete Memory.creeps[name];
+      }
+    }
 
     // Test notify capability
-    const room = Game.spawns[0].room;
+    const room = Object.values(Game.spawns)[0].room;
     if (room.controller?.level === 3) {
       Game.notify('Controller attained level 3');
     }
+
+    // TEST Set container mode when container is built
+    if (findStructureInRoom(room, STRUCTURE_CONTAINER) !== undefined) {
+      Memory.mode = 'container';
+    }
   }
 
-  // Game.cpu.getUsed();
+  // console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
 };

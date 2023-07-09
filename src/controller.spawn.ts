@@ -21,12 +21,13 @@ const chooseRole = (room: Room): CreepRole | null => {
   const builders = myCreeps.filter(creep => creep.memory.role === 'builder');
 
   // TODO Parameterize numbers
-  if (harvesters.length < 4) {
-    return 'harvester';
-  }
-
   if (Memory.mode === 'container' && transporters.length < 2) {
     return 'transporter';
+  }
+
+  const numberOfHarvesters = Memory.mode === 'container' ? 4 : 2;
+  if (harvesters.length < numberOfHarvesters) {
+    return 'harvester';
   }
 
   if (upgraders.length < 2) {

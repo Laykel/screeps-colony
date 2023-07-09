@@ -1,4 +1,4 @@
-type Mode = 'container';
+type Mode = 'container' | 'source';
 type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder';
 
 interface Memory {
@@ -11,6 +11,7 @@ interface CreepMemory {
   upgrading?: boolean;
 }
 
+// interface RoomMemory {}
+
 // interface FlagMemory {}
 // interface SpawnMemory {}
-// interface RoomMemory {}
