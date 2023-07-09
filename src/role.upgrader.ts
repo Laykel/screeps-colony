@@ -1,4 +1,4 @@
-import { withdrawFromContainer } from './shared.logic';
+import { harvestFromSource, withdrawFromContainer } from './shared.logic';
 
 export const runUpgraderRole = (creep: Creep) => {
   if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
@@ -18,7 +18,10 @@ export const runUpgraderRole = (creep: Creep) => {
       creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
     }
   } else {
-    // harvestFromSource(creep);
-    withdrawFromContainer(creep);
+    if (Memory.mode === 'container') {
+      withdrawFromContainer(creep);
+    } else {
+      harvestFromSource(creep);
+    }
   }
 };

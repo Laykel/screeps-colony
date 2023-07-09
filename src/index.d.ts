@@ -1,6 +1,9 @@
+type Mode = 'container';
 type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder';
 
-// interface Memory {}
+interface Memory {
+  mode?: Mode;
+}
 
 interface CreepMemory {
   role: CreepRole;

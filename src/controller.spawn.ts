@@ -8,7 +8,7 @@ const names: { [key in CreepRole]: string } = {
 const chooseBodyParts = (energy: number): BodyPartConstant[] => {
   console.log(energy);
   // TODO
-  return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+  return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
 };
 
 const chooseRole = (room: Room): CreepRole | null => {
@@ -20,16 +20,16 @@ const chooseRole = (room: Room): CreepRole | null => {
   const upgraders = myCreeps.filter(creep => creep.memory.role === 'upgrader');
   const builders = myCreeps.filter(creep => creep.memory.role === 'builder');
 
-  // TODO Parameterize number
-  if (harvesters.length < 3) {
+  // TODO Parameterize numbers
+  if (harvesters.length < 4) {
     return 'harvester';
   }
 
-  if (transporters.length < 1) {
-    return 'harvester';
+  if (Memory.mode === 'container' && transporters.length < 2) {
+    return 'transporter';
   }
 
-  if (upgraders.length < 1) {
+  if (upgraders.length < 2) {
     return 'upgrader';
   }
 

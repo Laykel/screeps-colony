@@ -1,4 +1,4 @@
-import { harvestFromSource } from './shared.logic';
+import { harvestFromSource, withdrawFromContainer } from './shared.logic';
 
 export const runBuilderRole = (creep: Creep) => {
   if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
@@ -18,6 +18,10 @@ export const runBuilderRole = (creep: Creep) => {
       }
     }
   } else {
-    harvestFromSource(creep);
+    if (Memory.mode === 'container') {
+      withdrawFromContainer(creep);
+    } else {
+      harvestFromSource(creep);
+    }
   }
 };

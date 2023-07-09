@@ -24,5 +24,13 @@ export const loop = () => {
 
   if (Game.time % 20 === 0) {
     // Run memory clean up code
+
+    // Test notify capability
+    const room = Game.spawns[0].room;
+    if (room.controller?.level === 3) {
+      Game.notify('Controller attained level 3');
+    }
   }
+
+  // Game.cpu.getUsed();
 };
