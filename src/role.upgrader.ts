@@ -22,6 +22,10 @@ export const runUpgraderRole = (creep: Creep) => {
       withdrawFromContainer(creep);
     } else {
       harvestFromSource(creep);
+      // const ruin = Game.getObjectById('64a3c4ca5af7792f7625b896' as Id<StructureContainer>);
+      // if (ruin && creep.withdraw(ruin, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      //   creep.moveTo(ruin, { visualizePathStyle: { stroke: '#ffaa00' } });
+      // }
     }
   }
 };

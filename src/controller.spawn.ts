@@ -52,7 +52,7 @@ const chooseRole = (room: Room): CreepRole | null => {
 
   const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
-  if (constructionSites.length > 0 && builders.length < 1) {
+  if (constructionSites.length > 0 && builders.length < 2) {
     return 'builder';
   }
 

@@ -5,11 +5,14 @@ export const findStructureInRoom = (room: Room, structureType: StructureConstant
 };
 
 export const harvestFromSource = (creep: Creep) => {
-  // TODO get closest?
-  const sources = creep.room.find(FIND_SOURCES);
+  const source = creep.pos.findClosestByPath(FIND_SOURCES);
+  if (!source) {
+    console.log(`No source found by creep ${creep.name}`);
+    return;
+  }
 
-  if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-    creep.moveTo(sources[0], { visualizePathStyle: { stroke: '#ffaa00' } });
+  if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+    creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
   }
 };
 

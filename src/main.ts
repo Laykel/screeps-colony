@@ -2,10 +2,11 @@ import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { findStructureInRoom } from './shared.logic';
 
-// TODO Set up a container and let it build
-// Then only set up the extensions
-
 // TODO Repairers?, improve spawn controller
+
+// TODO Long term: update state periodically (not every tick) and then perform actions based on the state
+
+// TODO Adapt number of creeps based on energy level in containers
 
 export const loop = () => {
   // Spawn creeps if applicable
@@ -20,7 +21,7 @@ export const loop = () => {
     runCreepController(creep);
   }
 
-  if (Game.time % 100 === 0) {
+  if (Game.time % 21 === 0) {
     // Run memory clean up code
     for (const name in Memory.creeps) {
       if (Game.creeps[name] === undefined) {
@@ -28,17 +29,16 @@ export const loop = () => {
       }
     }
 
-    // Test notify capability
+    // Set container mode when container is built
     const room = Object.values(Game.spawns)[0].room;
-    if (room.controller?.level === 3) {
-      Game.notify('Controller attained level 3');
-    }
-
-    // TEST Set container mode when container is built
-    if (findStructureInRoom(room, STRUCTURE_CONTAINER) !== undefined) {
+    if (
+      Memory.mode !== 'container' &&
+      findStructureInRoom(room, STRUCTURE_CONTAINER) !== undefined
+    ) {
+      Game.notify('Container built, setting container mode now');
       Memory.mode = 'container';
     }
-  }
 
-  // console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
+    console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
+  }
 };
