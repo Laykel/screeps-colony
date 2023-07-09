@@ -6,9 +6,25 @@ const names: { [key in CreepRole]: string } = {
 };
 
 const chooseBodyParts = (energy: number): BodyPartConstant[] => {
-  console.log(energy);
-  // TODO
-  return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE];
+  // TODO This sucks
+  const parts: BodyPartConstant[] = [CARRY];
+  let energyLeft = energy - 50;
+
+  const numberOfWork = Math.ceil(energyLeft / 200);
+
+  for (let i = 0; i < numberOfWork; i++) {
+    parts.push(WORK);
+    energyLeft -= 100;
+  }
+
+  const numberOfMove = Math.floor(energyLeft / 50);
+
+  for (let i = 0; i < numberOfMove; i++) {
+    parts.push(MOVE);
+    energyLeft -= 50;
+  }
+
+  return parts;
 };
 
 const chooseRole = (room: Room): CreepRole | null => {

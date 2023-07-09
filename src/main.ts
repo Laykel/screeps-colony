@@ -2,12 +2,10 @@ import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { findStructureInRoom } from './shared.logic';
 
-// TODO As soon as level 2 is hit, set up extensions
-// Once extensions are built, the new creeps are better
-// Then, place a container, then roads
-// Maybe the opposite
+// TODO Set up a container and let it build
+// Then only set up the extensions
 
-// TODO Spawn controller calculate body parts
+// TODO Repairers?, improve spawn controller
 
 export const loop = () => {
   // Spawn creeps if applicable
@@ -22,7 +20,7 @@ export const loop = () => {
     runCreepController(creep);
   }
 
-  if (Game.time % 20 === 0) {
+  if (Game.time % 100 === 0) {
     // Run memory clean up code
     for (const name in Memory.creeps) {
       if (Game.creeps[name] === undefined) {
