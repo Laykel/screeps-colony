@@ -38,7 +38,7 @@ module.exports = function (grunt) {
     screeps: {
       options: {
         email: creds.email,
-        password: creds.password,
+        token: creds.token,
         branch: 'default',
         ptr: false,
       },
