@@ -15,17 +15,13 @@ export const runUpgraderRole = (creep: Creep) => {
       creep.room.controller &&
       creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE
     ) {
-      creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
+      creep.moveTo(creep.room.controller);
     }
   } else {
     if (Memory.mode === 'container') {
       withdrawFromContainer(creep);
     } else {
       harvestFromSource(creep);
-      // const ruin = Game.getObjectById('64a3c4ca5af7792f7625b896' as Id<StructureContainer>);
-      // if (ruin && creep.withdraw(ruin, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      //   creep.moveTo(ruin, { visualizePathStyle: { stroke: '#ffaa00' } });
-      // }
     }
   }
 };

@@ -41,18 +41,18 @@ const chooseRole = (room: Room): CreepRole | null => {
     return 'transporter';
   }
 
-  const numberOfHarvesters = Memory.mode === 'container' ? 4 : 2;
+  const numberOfHarvesters = Memory.mode === 'container' ? 5 : 2;
   if (harvesters.length < numberOfHarvesters) {
     return 'harvester';
   }
 
-  if (upgraders.length < 2) {
+  if (upgraders.length < 3) {
     return 'upgrader';
   }
 
   const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
-  if (constructionSites.length > 0 && builders.length < 2) {
+  if (constructionSites.length > 0 && builders.length < 1) {
     return 'builder';
   }
 

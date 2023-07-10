@@ -2,11 +2,13 @@ import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { findStructureInRoom } from './shared.logic';
 
+// TODO Porter: if container > 1000 AND spawn and extensions are full AND there are walls, repair them?
 // TODO Repairers?, improve spawn controller
 
-// TODO Long term: update state periodically (not every tick) and then perform actions based on the state
-
+// TODO Improve energy fetching
 // TODO Adapt number of creeps based on energy level in containers
+
+// TODO Long term: update state periodically (not every tick) and then perform actions based on the state
 
 export const loop = () => {
   // Spawn creeps if applicable

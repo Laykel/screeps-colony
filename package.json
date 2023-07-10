@@ -6,7 +6,8 @@
     "lint:fix": "eslint --fix .",
     "clean": "rm -rf ./build/*",
     "build": "pnpm run clean && tsc",
-    "watch": "pnpm run clean && tsc --watch"
+    "watch": "pnpm run clean && tsc --watch",
+    "grunt": "grunt"
   },
   "devDependencies": {
     "@types/node": "20.4.0",
@@ -16,6 +17,10 @@
     "eslint": "8.44.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-prettier": "4.2.1",
+    "grunt": "1.6.1",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-run": "0.8.1",
+    "grunt-screeps": "1.5.0",
     "prettier": "2.8.8",
     "typescript": "5.1.6"
   }
