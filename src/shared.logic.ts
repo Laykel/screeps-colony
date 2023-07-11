@@ -1,4 +1,3 @@
-// TODO Deprecated: use findClosestStructure and findClosest!
 export const findStructureInRoom = (room: Room, structureType: StructureConstant) => {
   return room.find(FIND_STRUCTURES, {
     filter: structure => structure.structureType === structureType,
@@ -33,18 +32,20 @@ export const harvestFromSource = (creep: Creep) => {
 };
 
 export const withdrawFromContainer = (creep: Creep) => {
-  const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER);
+  const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
 
-  if (container && creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-    creep.moveTo(container);
+  if (!container) {
+    harvestFromSource(creep);
+  } else {
+    if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(container);
+    }
   }
 };
 
-// TODO Use this in all creeps that need energy, except Harveys
 export const withdrawEnergy = (creep: Creep) => {
   if (Memory.mode === 'container') {
     withdrawFromContainer(creep);
-    // TODO If container is empty, get from source
   } else {
     harvestFromSource(creep);
   }
@@ -58,8 +59,8 @@ export const transferToContainer = (creep: Creep) => {
   }
 };
 
-export const transferToStructures = (creep: Creep) => {
-  const targets = creep.room.find(FIND_STRUCTURES, {
+export const transferToSpawn = (creep: Creep) => {
+  const target = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
     filter: structure => {
       return (
         (structure.structureType === STRUCTURE_EXTENSION ||
@@ -69,9 +70,9 @@ export const transferToStructures = (creep: Creep) => {
     },
   });
 
-  if (targets.length > 0) {
-    if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(targets[0]);
+  if (target) {
+    if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+      creep.moveTo(target);
     }
   }
 };

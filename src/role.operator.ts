@@ -1,8 +1,8 @@
 import {
   findClosestStructure,
   findStructureInRoom,
-  transferToStructures,
-  withdrawFromContainer,
+  transferToSpawn,
+  withdrawEnergy,
 } from './shared.logic';
 
 export const runOperatorRole = (creep: Creep) => {
@@ -18,11 +18,11 @@ export const runOperatorRole = (creep: Creep) => {
 
   // Get energy if needed
   if (creep.memory.recharging) {
-    withdrawFromContainer(creep);
+    withdrawEnergy(creep);
   } else {
     // Fill spawn and extensions if not already done
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
-      transferToStructures(creep);
+      transferToSpawn(creep);
     } else {
       // If the rest is done, take care of the towers
       const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;

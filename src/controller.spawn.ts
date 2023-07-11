@@ -1,3 +1,6 @@
+const getCreepsMemoryByRole = (role: CreepRole): CreepMemory[] =>
+  Object.values(Memory.creeps).filter(creepMemory => creepMemory.role === role);
+
 const names: { [key in CreepRole]: string } = {
   harvester: 'Harvey',
   transporter: 'Porter',
@@ -6,6 +9,22 @@ const names: { [key in CreepRole]: string } = {
   operator: 'Perry',
   miner: 'Minnie',
 };
+
+// const minerBodyType = {
+//   1: MOVE,
+//   5: WORK,
+// };
+// const balancedBodyType = {
+//   half: WORK,
+//   quarter: CARRY,
+//   quarter2: MOVE,
+// };
+
+// const bodyTypes: { [key: string]: BodyPartConstant[] } = {
+//   balanced: [],
+//   worker: [WORK, WORK, WORK, WORK, WORK, MOVE], // Ideal for miners
+//   scout: [WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+// };
 
 const chooseBodyParts = (energy: number): BodyPartConstant[] => {
   // TODO This sucks
@@ -30,21 +49,18 @@ const chooseBodyParts = (energy: number): BodyPartConstant[] => {
 };
 
 const chooseRole = (room: Room): CreepRole | null => {
-  // TODO Maybe looking directly in memory is cheaper?
-  const myCreeps = room.find(FIND_MY_CREEPS);
-
-  const harvesters = myCreeps.filter(creep => creep.memory.role === 'harvester');
-  const transporters = myCreeps.filter(creep => creep.memory.role === 'transporter');
-  const upgraders = myCreeps.filter(creep => creep.memory.role === 'upgrader');
-  const builders = myCreeps.filter(creep => creep.memory.role === 'builder');
-  const operators = myCreeps.filter(creep => creep.memory.role === 'operator');
+  const harvesters = getCreepsMemoryByRole('harvester');
+  const transporters = getCreepsMemoryByRole('transporter');
+  const upgraders = getCreepsMemoryByRole('upgrader');
+  const builders = getCreepsMemoryByRole('builder');
+  const operators = getCreepsMemoryByRole('operator');
 
   // TODO Parameterize numbers
   if (Memory.mode === 'container' && transporters.length < 1) {
     return 'transporter';
   }
 
-  const numberOfHarvesters = Memory.mode === 'container' ? 5 : 2;
+  const numberOfHarvesters = Memory.mode === 'container' ? 4 : 2;
   if (harvesters.length < numberOfHarvesters) {
     return 'harvester';
   }
@@ -53,9 +69,7 @@ const chooseRole = (room: Room): CreepRole | null => {
     return 'upgrader';
   }
 
-  const constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
-
-  if (constructionSites.length > 0 && builders.length < 1) {
+  if (Object.keys(Game.constructionSites).length > 0 && builders.length < 1) {
     return 'builder';
   }
 

@@ -1,6 +1,6 @@
 // TODO Consider container harvesting
 
-import { harvestFromSource, transferToContainer, transferToStructures } from './shared.logic';
+import { harvestFromSource, transferToContainer, transferToSpawn } from './shared.logic';
 
 export const runHarvesterRole = (creep: Creep) => {
   if (creep.store.getFreeCapacity() > 0) {
@@ -9,7 +9,7 @@ export const runHarvesterRole = (creep: Creep) => {
     if (Memory.mode === 'container') {
       transferToContainer(creep);
     } else {
-      transferToStructures(creep);
+      transferToSpawn(creep);
     }
   }
 };

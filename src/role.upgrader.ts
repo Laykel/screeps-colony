@@ -1,27 +1,23 @@
-import { harvestFromSource, withdrawFromContainer } from './shared.logic';
+import { withdrawEnergy } from './shared.logic';
 
 export const runUpgraderRole = (creep: Creep) => {
-  if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
-    creep.memory.upgrading = false;
-    creep.say('🔄 harvest');
+  if (!creep.memory.recharging && creep.store[RESOURCE_ENERGY] === 0) {
+    creep.memory.recharging = true;
+    creep.say('🔄recharge');
   }
-  if (!creep.memory.upgrading && creep.store.getFreeCapacity() == 0) {
-    creep.memory.upgrading = true;
-    creep.say('⚡ upgrade');
+  if (creep.memory.recharging && creep.store.getFreeCapacity() === 0) {
+    creep.memory.recharging = false;
+    creep.say('⚡upgrade');
   }
 
-  if (creep.memory.upgrading) {
+  if (creep.memory.recharging) {
+    withdrawEnergy(creep);
+  } else {
     if (
       creep.room.controller &&
       creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE
     ) {
       creep.moveTo(creep.room.controller);
-    }
-  } else {
-    if (Memory.mode === 'container') {
-      withdrawFromContainer(creep);
-    } else {
-      harvestFromSource(creep);
     }
   }
 };

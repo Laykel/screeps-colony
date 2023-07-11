@@ -39,7 +39,7 @@ module.exports = function (grunt) {
       options: {
         email: creds.email,
         token: creds.token,
-        branch: 'default',
+        branch: 'main',
         ptr: false,
       },
       dist: {

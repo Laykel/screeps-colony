@@ -1,4 +1,4 @@
-import { findStructureInRoom, transferToStructures, withdrawFromContainer } from './shared.logic';
+import { findStructureInRoom, transferToSpawn, withdrawEnergy } from './shared.logic';
 
 export const runTransporterRole = (creep: Creep) => {
   if (Memory.mode !== 'container') return;
@@ -9,31 +9,32 @@ export const runTransporterRole = (creep: Creep) => {
   }
   if (creep.memory.recharging && creep.store.getFreeCapacity() === 0) {
     creep.memory.recharging = false;
+    creep.say('transport');
   }
 
   // Get energy if needed
   if (creep.memory.recharging) {
-    withdrawFromContainer(creep);
+    withdrawEnergy(creep);
   } else {
     // Fill spawn and extensions if not already done
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
-      transferToStructures(creep);
+      transferToSpawn(creep);
     } else {
       // If the rest is done, take care of the walls
       const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
 
-      if (container.store.energy > 800) {
+      if (container.store.energy > 200) {
         let target;
-        const walls = creep.room.find(FIND_STRUCTURES, {
+        const structures = creep.room.find(FIND_STRUCTURES, {
           filter: structure =>
             structure.structureType === STRUCTURE_WALL ||
             structure.structureType === STRUCTURE_RAMPART ||
             structure.structureType === STRUCTURE_CONTAINER,
         });
 
-        for (const wall of walls) {
-          if (wall.hits < 60000) {
-            target = wall;
+        for (const structure of structures) {
+          if (structure.hits < 60000) {
+            target = structure;
           }
         }
 
