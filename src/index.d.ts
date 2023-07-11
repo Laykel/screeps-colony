@@ -1,5 +1,5 @@
 type Mode = 'container' | 'source';
-type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder';
+type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder' | 'operator' | 'miner';
 
 interface Memory {
   mode?: Mode;

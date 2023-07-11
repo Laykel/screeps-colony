@@ -1,6 +1,7 @@
 import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { findStructureInRoom } from './shared.logic';
+import { runTowerController } from './controller.tower';
 
 // TODO Porter: if container > 1000 AND spawn and extensions are full AND there are walls, repair them?
 // TODO Repairers?, improve spawn controller
@@ -23,6 +24,9 @@ export const loop = () => {
     const creep = Game.creeps[name];
     runCreepController(creep);
   }
+
+  // Execute tower logic
+  runTowerController();
 
   if (Game.time % 21 === 0) {
     // Run memory clean up code

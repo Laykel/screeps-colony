@@ -1,6 +1,11 @@
-import { findStructureInRoom, transferToStructures, withdrawFromContainer } from './shared.logic';
+import {
+  findClosestStructure,
+  findStructureInRoom,
+  transferToStructures,
+  withdrawFromContainer,
+} from './shared.logic';
 
-export const runTransporterRole = (creep: Creep) => {
+export const runOperatorRole = (creep: Creep) => {
   if (Memory.mode !== 'container') return;
 
   if (!creep.memory.recharging && creep.store[RESOURCE_ENERGY] === 0) {
@@ -19,26 +24,14 @@ export const runTransporterRole = (creep: Creep) => {
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
       transferToStructures(creep);
     } else {
-      // If the rest is done, take care of the walls
+      // If the rest is done, take care of the towers
       const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
 
       if (container.store.energy > 800) {
-        let target;
-        const walls = creep.room.find(FIND_STRUCTURES, {
-          filter: structure =>
-            structure.structureType === STRUCTURE_WALL ||
-            structure.structureType === STRUCTURE_RAMPART ||
-            structure.structureType === STRUCTURE_CONTAINER,
-        });
+        const tower = findClosestStructure(creep.pos, STRUCTURE_TOWER) as StructureTower;
 
-        for (const wall of walls) {
-          if (wall.hits < 60000) {
-            target = wall;
-          }
-        }
-
-        if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {
-          creep.moveTo(target);
+        if (tower && creep.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+          creep.moveTo(tower);
         }
       }
     }

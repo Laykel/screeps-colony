@@ -3,6 +3,8 @@ const names: { [key in CreepRole]: string } = {
   transporter: 'Porter',
   upgrader: 'Grey',
   builder: 'Billy',
+  operator: 'Perry',
+  miner: 'Minnie',
 };
 
 const chooseBodyParts = (energy: number): BodyPartConstant[] => {
@@ -35,9 +37,10 @@ const chooseRole = (room: Room): CreepRole | null => {
   const transporters = myCreeps.filter(creep => creep.memory.role === 'transporter');
   const upgraders = myCreeps.filter(creep => creep.memory.role === 'upgrader');
   const builders = myCreeps.filter(creep => creep.memory.role === 'builder');
+  const operators = myCreeps.filter(creep => creep.memory.role === 'operator');
 
   // TODO Parameterize numbers
-  if (Memory.mode === 'container' && transporters.length < 2) {
+  if (Memory.mode === 'container' && transporters.length < 1) {
     return 'transporter';
   }
 
@@ -54,6 +57,13 @@ const chooseRole = (room: Room): CreepRole | null => {
 
   if (constructionSites.length > 0 && builders.length < 1) {
     return 'builder';
+  }
+
+  const towers = room.find(FIND_STRUCTURES, {
+    filter: structure => structure.structureType === STRUCTURE_TOWER,
+  });
+  if (towers.length > 0 && operators.length < 1) {
+    return 'operator';
   }
 
   return null;
