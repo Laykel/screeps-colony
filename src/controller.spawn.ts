@@ -1,5 +1,4 @@
-const getCreepsMemoryByRole = (role: CreepRole): CreepMemory[] =>
-  Object.values(Memory.creeps).filter(creepMemory => creepMemory.role === role);
+import { getCreepsMemoryByRole } from './shared.logic';
 
 const names: { [key in CreepRole]: string } = {
   harvester: 'Harvey',
@@ -10,24 +9,22 @@ const names: { [key in CreepRole]: string } = {
   miner: 'Minnie',
 };
 
-// const minerBodyType = {
-//   1: MOVE,
-//   5: WORK,
-// };
-// const balancedBodyType = {
-//   half: WORK,
-//   quarter: CARRY,
-//   quarter2: MOVE,
-// };
+const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstant[] } = {
+  miner: () => [MOVE, WORK, WORK, WORK, WORK, WORK],
+  transporter: energyAvailable => transporterBody(energyAvailable),
+  operator: energyAvailable => balancedBody(energyAvailable),
+  upgrader: energyAvailable => balancedBody(energyAvailable),
+  builder: energyAvailable => balancedBody(energyAvailable),
+  harvester: () => [MOVE, CARRY, WORK, WORK],
+};
 
-// const bodyTypes: { [key: string]: BodyPartConstant[] } = {
-//   balanced: [],
-//   worker: [WORK, WORK, WORK, WORK, WORK, MOVE], // Ideal for miners
-//   scout: [WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
-// };
+const transporterBody = (energy: number) => {
+  const numberOfCarry = energy % 100 === 0 ? energy / 50 / 2 + 1 : Math.ceil(energy / 50 / 2);
+  return [...Array(numberOfCarry).fill(CARRY), ...Array(energy / 50 - numberOfCarry).fill(MOVE)];
+};
 
-const chooseBodyParts = (energy: number): BodyPartConstant[] => {
-  // TODO This sucks
+// TODO Improve
+const balancedBody = (energy: number): BodyPartConstant[] => {
   const parts: BodyPartConstant[] = [CARRY];
   let energyLeft = energy - 50;
 
@@ -48,21 +45,36 @@ const chooseBodyParts = (energy: number): BodyPartConstant[] => {
   return parts;
 };
 
-const chooseRole = (room: Room): CreepRole | null => {
+// TODO Adapt number of creeps based on energy level in containers, and number of extensions (energyCapacityAvailable)
+const chooseRole = (): CreepRole | null => {
   const harvesters = getCreepsMemoryByRole('harvester');
+  const miners = getCreepsMemoryByRole('miner');
   const transporters = getCreepsMemoryByRole('transporter');
+  const operators = getCreepsMemoryByRole('operator');
   const upgraders = getCreepsMemoryByRole('upgrader');
   const builders = getCreepsMemoryByRole('builder');
-  const operators = getCreepsMemoryByRole('operator');
 
-  // TODO Parameterize numbers
-  if (Memory.mode === 'container' && transporters.length < 1) {
-    return 'transporter';
-  }
+  if (Memory.mode === 'static_mining') {
+    // TODO IMPORTANT Replace this nonsense with a queue in the spawner
+    // Make sure a harvester stays around as long as no transporters are there
+    if (harvesters.length < 1 && transporters.length < 1 && operators.length < 1) {
+      return 'harvester';
+    }
 
-  const numberOfHarvesters = Memory.mode === 'container' ? 4 : 2;
-  if (harvesters.length < numberOfHarvesters) {
-    return 'harvester';
+    if (miners.length < 1) {
+      // if (miners.length < Memory.sourceIds.length) {
+      return 'miner';
+    }
+    if (transporters.length < 2) {
+      return 'transporter';
+    }
+    if (operators.length < 2) {
+      return 'operator';
+    }
+  } else {
+    if (harvesters.length < 3) {
+      return 'harvester';
+    }
   }
 
   if (upgraders.length < 3) {
@@ -73,13 +85,6 @@ const chooseRole = (room: Room): CreepRole | null => {
     return 'builder';
   }
 
-  const towers = room.find(FIND_STRUCTURES, {
-    filter: structure => structure.structureType === STRUCTURE_TOWER,
-  });
-  if (towers.length > 0 && operators.length < 1) {
-    return 'operator';
-  }
-
   return null;
 };
 
@@ -88,12 +93,44 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
 
   // Check if max energy capacity is reached, then spawn
   if (energyAvailable === spawn.room.energyCapacityAvailable) {
-    const role = chooseRole(spawn.room);
+    const role = chooseRole();
 
     if (role === null) return;
 
-    spawn.spawnCreep(chooseBodyParts(energyAvailable), `${names[role]}-${tick}`, {
-      memory: { role },
-    });
+    spawn.spawnCreep(
+      bodies[role](energyAvailable),
+      `${names[role]}-${tick - Memory.startingTick}`,
+      {
+        memory: { role, recharging: true, sourceId: assignedSourceId(role) },
+      },
+    );
+  }
+};
+
+const assignedSourceId = (role: CreepRole): Id<Source> => {
+  // TODO Rework this. Maybe assign a "main source id" and "upgrader source id" manually...
+  switch (role) {
+    case 'miner':
+      return (
+        Memory.sourceIds.filter(
+          id =>
+            !getCreepsMemoryByRole('miner')
+              .map(memory => memory.sourceId)
+              .includes(id),
+        )[0] ?? Memory.sourceIds[0]
+      );
+    case 'transporter':
+      return (
+        Game.spawns[Memory.firstSpawnName].pos.findClosestByPath(FIND_SOURCES)?.id ??
+        Memory.sourceIds[0]
+      );
+    case 'upgrader':
+      return (
+        Memory.sourceIds.filter(
+          id => id !== Game.spawns[Memory.firstSpawnName].pos.findClosestByPath(FIND_SOURCES)?.id,
+        )[0] ?? Memory.sourceIds[0]
+      );
+    default:
+      return Memory.sourceIds[0];
   }
 };

@@ -1,20 +1,14 @@
-import { transferToSpawn } from './shared.logic';
-
-// Go to closest source
-// If mode = container, bring to container
-// If container is within one block of source, activate container mining mode
-// Have transporter bring the energy to the spawn and extensions, then the main container
-
 export const runMinerRole = (creep: Creep) => {
-  if (creep.store.getFreeCapacity() > 0 && creep.memory.sourceId) {
+  if (creep.memory.sourceId) {
+    // Get assigned source
     const source = Game.getObjectById(creep.memory.sourceId);
 
+    // TODO If there is a container within one block of source, make sure to move on top of it
+    //   Make that check in scheduled task, store info
+
+    // Harvest and let it drop
     if (source && creep.harvest(source) === ERR_NOT_IN_RANGE) {
       creep.moveTo(source);
-    }
-  } else {
-    if (Memory.mode === 'game_start') {
-      transferToSpawn(creep);
     }
   }
 };

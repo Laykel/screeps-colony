@@ -1,3 +1,4 @@
+// TODO Improve this...
 export const runTowerController = () => {
   const tower = Game.getObjectById('64ac94f4026d2d2eca2ac937' as Id<StructureTower>);
 

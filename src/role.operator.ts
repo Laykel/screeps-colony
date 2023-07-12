@@ -1,20 +1,16 @@
 import {
   findClosestStructure,
   findStructureInRoom,
+  handleRecharging,
   transferToSpawn,
   withdrawEnergy,
 } from './shared.logic';
 
+// TODO Merge Porter, Repairers and builder into Operator who is reallocated based on energy levels and priorities
 export const runOperatorRole = (creep: Creep) => {
-  if (Memory.mode !== 'container') return;
+  if (Memory.mode !== 'static_mining') return;
 
-  if (!creep.memory.recharging && creep.store[RESOURCE_ENERGY] === 0) {
-    creep.memory.recharging = true;
-    creep.say('🔄recharge');
-  }
-  if (creep.memory.recharging && creep.store.getFreeCapacity() === 0) {
-    creep.memory.recharging = false;
-  }
+  handleRecharging(creep, 'operate');
 
   // Get energy if needed
   if (creep.memory.recharging) {
@@ -24,14 +20,32 @@ export const runOperatorRole = (creep: Creep) => {
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
       transferToSpawn(creep);
     } else {
-      // If the rest is done, take care of the towers
-      const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
+      const container = findStructureInRoom(
+        creep.room,
+        STRUCTURE_CONTAINER,
+      ) as StructureContainer | null;
 
-      if (container.store.energy > 800) {
-        const tower = findClosestStructure(creep.pos, STRUCTURE_TOWER) as StructureTower;
+      if (container && container.store.energy > 600) {
+        const tower = findClosestStructure(creep.pos, STRUCTURE_TOWER) as StructureTower | null;
 
-        if (tower && creep.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-          creep.moveTo(tower);
+        // TODO Repair tower if damaged
+        if (tower && tower.store.energy !== 1000) {
+          if (creep.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(tower);
+          }
+        } else {
+          const structures = creep.room.find(FIND_STRUCTURES, {
+            filter: structure =>
+              (structure.structureType === STRUCTURE_WALL ||
+                structure.structureType === STRUCTURE_RAMPART) &&
+              structure.hits < 80000,
+          });
+
+          const target = structures?.[0];
+
+          if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(target);
+          }
         }
       }
     }

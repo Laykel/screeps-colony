@@ -1,3 +1,7 @@
+// Finding things ---------------------------------------------------
+export const getCreepsMemoryByRole = (role: CreepRole): CreepMemory[] =>
+  Object.values(Memory.creeps).filter(creepMemory => creepMemory.role === role);
+
 export const findStructureInRoom = (room: Room, structureType: StructureConstant) => {
   return room.find(FIND_STRUCTURES, {
     filter: structure => structure.structureType === structureType,
@@ -17,6 +21,32 @@ export const findClosest = (pos: RoomPosition, find: FindConstant, creepName = '
     console.log(`No object of type ${find} was found by creep ${creepName}`);
   }
   return target;
+};
+
+// Getting energy ---------------------------------------------------
+export const handleRecharging = (creep: Creep, message: string) => {
+  if (!creep.memory.recharging && creep.store[RESOURCE_ENERGY] === 0) {
+    creep.memory.recharging = true;
+    creep.say('recharge');
+  }
+  if (creep.memory.recharging && creep.store.getFreeCapacity() === 0) {
+    creep.memory.recharging = false;
+    creep.say(message);
+  }
+};
+
+export const pickupFromAssignedDrop = (creep: Creep) => {
+  // Get assigned source
+  if (creep.memory.sourceId) {
+    const source = Game.getObjectById(creep.memory.sourceId);
+    const dropped = source && source.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+
+    if (dropped && creep.pickup(dropped) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(dropped);
+    }
+  } else {
+    console.log(`Creep ${creep.name} doesn't have an assigned sourceId`);
+  }
 };
 
 export const harvestFromSource = (creep: Creep) => {
@@ -44,18 +74,30 @@ export const withdrawFromContainer = (creep: Creep) => {
 };
 
 export const withdrawEnergy = (creep: Creep) => {
-  if (Memory.mode === 'container') {
+  if (Memory.mainStorageId) {
+    // TODO Withdraw from main storage
     withdrawFromContainer(creep);
   } else {
     harvestFromSource(creep);
   }
 };
 
+// Transferring energy ----------------------------------------------
 export const transferToContainer = (creep: Creep) => {
   const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER);
 
   if (container && creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
     creep.moveTo(container);
+  }
+};
+
+export const transferToMainStorage = (creep: Creep) => {
+  if (Memory.mainStorageId) {
+    const storage = Game.getObjectById(Memory.mainStorageId);
+
+    if (storage && creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(storage);
+    }
   }
 };
 
