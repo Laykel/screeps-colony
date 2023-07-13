@@ -15,6 +15,7 @@ const initMemory = () => {
   Memory.mode = 'game_start';
 
   Memory.sourceIds = firstSpawn.room.find(FIND_SOURCES).map(source => source.id);
+  Memory.towerIds = [];
 };
 
 export const loop = () => {
@@ -38,5 +39,7 @@ export const loop = () => {
   }
 
   // Execute tower logic
-  runTowerController();
+  for (const towerId of Memory.towerIds) {
+    runTowerController(towerId);
+  }
 };

@@ -1,4 +1,4 @@
-import { findClosest, findStructureInRoom, handleRecharging, withdrawEnergy } from './shared.logic';
+import { findClosest, handleRecharging, withdrawEnergy } from './shared.logic';
 
 export const runBuilderRole = (creep: Creep) => {
   handleRecharging(creep, 'build');
@@ -6,11 +6,9 @@ export const runBuilderRole = (creep: Creep) => {
   if (creep.memory.recharging) {
     withdrawEnergy(creep);
   } else {
-    const container =
-      Memory.mainStorageId &&
-      (findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer);
+    const storage = Memory.mainStorageId && Game.getObjectById(Memory.mainStorageId);
 
-    if (!container || container.store.energy > 1200) {
+    if (!storage || storage.store.energy > 1200) {
       const target = findClosest(
         creep.pos,
         FIND_MY_CONSTRUCTION_SITES,

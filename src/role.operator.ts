@@ -1,14 +1,13 @@
 import {
   findClosestStructure,
-  findStructureInRoom,
   handleRecharging,
   transferToSpawn,
   withdrawEnergy,
 } from './shared.logic';
 
-// TODO Merge Porter, Repairers and builder into Operator who is reallocated based on energy levels and priorities
+// TODO Merge Porter, Repairers and **builder** and even **upgraders** into Operator who is reallocated based on energy levels and priorities: mission
 export const runOperatorRole = (creep: Creep) => {
-  if (Memory.mode !== 'static_mining') return;
+  if (Memory.mode !== 'static_mining' || !Memory.mainStorageId) return;
 
   handleRecharging(creep, 'operate');
 
@@ -20,12 +19,9 @@ export const runOperatorRole = (creep: Creep) => {
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
       transferToSpawn(creep);
     } else {
-      const container = findStructureInRoom(
-        creep.room,
-        STRUCTURE_CONTAINER,
-      ) as StructureContainer | null;
+      const storage = Game.getObjectById(Memory.mainStorageId);
 
-      if (container && container.store.energy > 600) {
+      if (storage && storage.store.energy > 600) {
         const tower = findClosestStructure(creep.pos, STRUCTURE_TOWER) as StructureTower | null;
 
         // TODO Repair tower if damaged
@@ -38,7 +34,7 @@ export const runOperatorRole = (creep: Creep) => {
             filter: structure =>
               (structure.structureType === STRUCTURE_WALL ||
                 structure.structureType === STRUCTURE_RAMPART) &&
-              structure.hits < 80000,
+              structure.hits < 120000, // TODO Gradually increase hits for defenses
           });
 
           const target = structures?.[0];

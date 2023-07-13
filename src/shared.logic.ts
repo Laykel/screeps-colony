@@ -62,13 +62,18 @@ export const harvestFromSource = (creep: Creep) => {
 };
 
 export const withdrawFromContainer = (creep: Creep) => {
-  const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
+  let storage;
+  if (Memory.mainStorageId) {
+    storage = Game.getObjectById(Memory.mainStorageId);
+  } else {
+    storage = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
+  }
 
-  if (!container) {
+  if (!storage) {
     harvestFromSource(creep);
   } else {
-    if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      creep.moveTo(container);
+    if (creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(storage);
     }
   }
 };

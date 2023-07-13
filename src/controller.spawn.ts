@@ -11,17 +11,18 @@ const names: { [key in CreepRole]: string } = {
 
 const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstant[] } = {
   miner: () => [MOVE, WORK, WORK, WORK, WORK, WORK],
-  transporter: energyAvailable => transporterBody(energyAvailable),
+  transporter: () => [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], // transporterBody(energyAvailable),
   operator: energyAvailable => balancedBody(energyAvailable),
   upgrader: energyAvailable => balancedBody(energyAvailable),
   builder: energyAvailable => balancedBody(energyAvailable),
   harvester: () => [MOVE, CARRY, WORK, WORK],
 };
 
-const transporterBody = (energy: number) => {
-  const numberOfCarry = energy % 100 === 0 ? energy / 50 / 2 + 1 : Math.ceil(energy / 50 / 2);
-  return [...Array(numberOfCarry).fill(CARRY), ...Array(energy / 50 - numberOfCarry).fill(MOVE)];
-};
+// TODO This is great for transporters without limits...
+// const transporterBody = (energy: number) => {
+//   const numberOfCarry = energy % 100 === 0 ? energy / 50 / 2 + 1 : Math.ceil(energy / 50 / 2);
+//   return [...Array(numberOfCarry).fill(CARRY), ...Array(energy / 50 - numberOfCarry).fill(MOVE)];
+// };
 
 // TODO Improve
 const balancedBody = (energy: number): BodyPartConstant[] => {
@@ -61,8 +62,8 @@ const chooseRole = (): CreepRole | null => {
       return 'harvester';
     }
 
-    if (miners.length < 1) {
-      // if (miners.length < Memory.sourceIds.length) {
+    if (miners.length < 1 || (transporters.length > 0 && miners.length < 2)) {
+      // TODO if (miners.length < Memory.sourceIds.length) {
       return 'miner';
     }
     if (transporters.length < 2) {
@@ -121,13 +122,19 @@ const assignedSourceId = (role: CreepRole): Id<Source> => {
       );
     case 'transporter':
       return (
-        Game.spawns[Memory.firstSpawnName].pos.findClosestByPath(FIND_SOURCES)?.id ??
-        Memory.sourceIds[0]
+        Memory.sourceIds.filter(
+          id =>
+            !getCreepsMemoryByRole('transporter')
+              .map(memory => memory.sourceId)
+              .includes(id),
+        )[0] ?? Memory.sourceIds[0]
       );
     case 'upgrader':
       return (
         Memory.sourceIds.filter(
-          id => id !== Game.spawns[Memory.firstSpawnName].pos.findClosestByPath(FIND_SOURCES)?.id,
+          id =>
+            id !==
+            Game.rooms[Memory.firstRoomName].controller?.pos.findClosestByPath(FIND_SOURCES)?.id,
         )[0] ?? Memory.sourceIds[0]
       );
     default:
