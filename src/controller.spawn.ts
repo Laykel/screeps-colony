@@ -20,8 +20,10 @@ const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstan
   builder: energyAvailable => balancedBody(energyAvailable),
 };
 
+// This strategy isn't great at every energy level...
 const balancedBody = (energy: number): BodyPartConstant[] => {
-  let energyLeft = energy - 100;
+  const numberOfCarry = energy >= 800 ? 2 : 1;
+  let energyLeft = energy - numberOfCarry * 50;
 
   const numberOfWork = Math.floor(energyLeft / 150);
   energyLeft -= numberOfWork * 100;
@@ -31,7 +33,7 @@ const balancedBody = (energy: number): BodyPartConstant[] => {
   return [
     ...Array(numberOfMove).fill(MOVE),
     ...Array(numberOfWork).fill(WORK),
-    ...Array(2).fill(CARRY),
+    ...Array(numberOfCarry).fill(CARRY),
   ];
 };
 

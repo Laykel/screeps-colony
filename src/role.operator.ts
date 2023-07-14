@@ -5,7 +5,30 @@ import {
   withdrawEnergy,
 } from './shared.logic';
 
-// TODO Merge Porter, Repairers and **builder** and even **upgraders** into Operator who is reallocated based on energy levels and priorities: mission
+// TODO Operators can have any mission. When a new mission is needed, we check who is closest and whether it has higher priority than their current mission.
+// TODO A creep will accept the mission after its energy runs out (memory: {mission, nextMission})
+// TODO Some missions will be "EMERGENCY", like repairing critical structures
+// TODO Refilling the spawn/extensions and towers is next in priority
+// TODO There should always be one upgrading
+// TODO One creep per mission, unless a great volume exists
+type MissionType = 'refill_spawn' | 'refill_tower' | 'repair' | 'upgrade' | 'fortify' | 'awaiting';
+
+type MissionStatement =
+  | {
+      type: 'awaiting';
+    }
+  | { type: 'upgrade'; source: Id<StructureContainer> | Id<Source> }
+  | { type: 'refill'; target: Id<StructureTower> };
+
+const test = () => {
+  const statement: MissionStatement = {
+    type: 'upgrade',
+    source: '' as Id<Source>,
+  };
+
+  console.log(statement);
+};
+
 export const runOperatorRole = (creep: Creep) => {
   if (Memory.mode !== 'static_mining' || !Memory.mainStorageId) return;
 
@@ -30,14 +53,12 @@ export const runOperatorRole = (creep: Creep) => {
             creep.moveTo(tower);
           }
         } else {
-          const structures = creep.room.find(FIND_STRUCTURES, {
+          const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
               (structure.structureType === STRUCTURE_WALL ||
                 structure.structureType === STRUCTURE_RAMPART) &&
-              structure.hits < 120000, // TODO Gradually increase hits for defenses
+              structure.hits < 250000, // TODO Gradually increase hits for defenses
           });
-
-          const target = structures?.[0];
 
           if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {
             creep.moveTo(target);

@@ -34,7 +34,7 @@ export const runScheduledTasks = () => {
     const firstRoom = Game.rooms[Memory.firstRoomName];
 
     // Once we arrive at 550 energyCapacityAvailable, activate static mining mode
-    if (Memory.mode === 'game_start' && firstRoom.energyAvailable >= 550) {
+    if (Memory.mode === 'game_start' && firstRoom.energyCapacityAvailable >= 550) {
       Memory.mode = 'static_mining';
     }
 
