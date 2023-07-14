@@ -1,5 +1,12 @@
-type Mode = 'container' | 'source' | 'game_start' | 'static_mining';
-type CreepRole = 'harvester' | 'transporter' | 'upgrader' | 'builder' | 'operator' | 'miner';
+type Mode = 'game_start' | 'static_mining';
+type CreepRole =
+  | 'harvester'
+  | 'miner'
+  | 'transporter'
+  | 'operator'
+  | 'missionner'
+  | 'upgrader'
+  | 'builder';
 
 // This gets filled in at the very start of the first tick
 interface Memory {

@@ -6,13 +6,12 @@ import { runScheduledTasks } from './scheduled';
 // TODO Have emergency allocation when rampart, container, or other is about to die/under a certain threshold
 
 const initMemory = () => {
-  Memory.firstSpawnName = 'Spawn1';
-  const firstSpawn = Game.spawns[Memory.firstSpawnName];
-
-  Memory.firstRoomName = firstSpawn.room.name;
-
   Memory.startingTick = Game.time;
   Memory.mode = 'game_start';
+
+  Memory.firstSpawnName = 'Spawn1';
+  const firstSpawn = Game.spawns[Memory.firstSpawnName];
+  Memory.firstRoomName = firstSpawn.room.name;
 
   Memory.sourceIds = firstSpawn.room.find(FIND_SOURCES).map(source => source.id);
   Memory.towerIds = [];

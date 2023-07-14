@@ -2,48 +2,42 @@ import { getCreepsMemoryByRole } from './shared.logic';
 
 const names: { [key in CreepRole]: string } = {
   harvester: 'Harvey',
+  miner: 'Minnie',
   transporter: 'Porter',
+  operator: 'Perry',
+  missionner: 'Missie',
   upgrader: 'Grey',
   builder: 'Billy',
-  operator: 'Perry',
-  miner: 'Minnie',
 };
 
 const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstant[] } = {
+  harvester: () => [MOVE, CARRY, WORK, WORK],
   miner: () => [MOVE, WORK, WORK, WORK, WORK, WORK],
-  transporter: () => [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], // transporterBody(energyAvailable),
+  transporter: () => [MOVE, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY, CARRY],
   operator: energyAvailable => balancedBody(energyAvailable),
+  missionner: energyAvailable => scoutBody(energyAvailable),
   upgrader: energyAvailable => balancedBody(energyAvailable),
   builder: energyAvailable => balancedBody(energyAvailable),
-  harvester: () => [MOVE, CARRY, WORK, WORK],
 };
 
-// TODO This is great for transporters without limits...
-// const transporterBody = (energy: number) => {
-//   const numberOfCarry = energy % 100 === 0 ? energy / 50 / 2 + 1 : Math.ceil(energy / 50 / 2);
-//   return [...Array(numberOfCarry).fill(CARRY), ...Array(energy / 50 - numberOfCarry).fill(MOVE)];
-// };
-
-// TODO Improve
 const balancedBody = (energy: number): BodyPartConstant[] => {
-  const parts: BodyPartConstant[] = [CARRY];
-  let energyLeft = energy - 50;
+  let energyLeft = energy - 100;
 
-  const numberOfWork = Math.ceil(energyLeft / 200);
-
-  for (let i = 0; i < numberOfWork; i++) {
-    parts.push(WORK);
-    energyLeft -= 100;
-  }
+  const numberOfWork = Math.floor(energyLeft / 150);
+  energyLeft -= numberOfWork * 100;
 
   const numberOfMove = Math.floor(energyLeft / 50);
 
-  for (let i = 0; i < numberOfMove; i++) {
-    parts.push(MOVE);
-    energyLeft -= 50;
-  }
+  return [
+    ...Array(numberOfMove).fill(MOVE),
+    ...Array(numberOfWork).fill(WORK),
+    ...Array(2).fill(CARRY),
+  ];
+};
 
-  return parts;
+const scoutBody = (energy: number): BodyPartConstant[] => {
+  const numberOfParts = energy / 50 / 2;
+  return [...Array(numberOfParts).fill(MOVE), ...Array(numberOfParts).fill(CARRY)];
 };
 
 // TODO Adapt number of creeps based on energy level in containers, and number of extensions (energyCapacityAvailable)
