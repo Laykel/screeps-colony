@@ -34,31 +34,35 @@ export const runOperatorRole = (creep: Creep) => {
 
   handleRecharging(creep, 'operate');
 
-  // Get energy if needed
   if (creep.memory.recharging) {
     withdrawEnergy(creep);
   } else {
-    // Fill spawn and extensions if not already done
+    // Refill spawn and extensions
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
       transferToSpawn(creep);
     } else {
       const storage = Game.getObjectById(Memory.mainStorageId);
 
       if (storage && storage.store.energy > 600) {
+        // Refill tower
         const tower = findClosestStructure(creep.pos, STRUCTURE_TOWER) as StructureTower | null;
 
-        // TODO Repair tower if damaged
         if (tower && tower.store.energy !== 1000) {
           if (creep.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             creep.moveTo(tower);
           }
         } else {
+          // Strengthen the fortifications
           const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
-              (structure.structureType === STRUCTURE_WALL ||
-                structure.structureType === STRUCTURE_RAMPART) &&
-              structure.hits < 250000, // TODO Gradually increase hits for defenses
+              structure.structureType in [STRUCTURE_WALL, STRUCTURE_RAMPART] &&
+              structure.hits < Memory.fortificationsMaxHits,
           });
+
+          if (!target) {
+            // Steadily increase hit points for the fortifications
+            Memory.fortificationsMaxHits += 1000;
+          }
 
           if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {
             creep.moveTo(target);

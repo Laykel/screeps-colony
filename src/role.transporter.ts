@@ -10,7 +10,6 @@ export const runTransporterRole = (creep: Creep) => {
 
   handleRecharging(creep, 'transport');
 
-  // Get energy if needed
   if (creep.memory.recharging) {
     pickupFromAssignedDrop(creep);
   } else {

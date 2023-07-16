@@ -20,6 +20,8 @@ interface Memory {
   sourceIds: Id<Source>[];
   towerIds: Id<StructureTower>[];
   mainStorageId?: Id<StructureContainer>;
+
+  fortificationsMaxHits: number;
 }
 
 // TODO Use discriminated unions

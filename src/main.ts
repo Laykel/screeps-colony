@@ -15,6 +15,8 @@ const initMemory = () => {
 
   Memory.sourceIds = firstSpawn.room.find(FIND_SOURCES).map(source => source.id);
   Memory.towerIds = [];
+
+  Memory.fortificationsMaxHits = 1000;
 };
 
 export const loop = () => {
@@ -39,6 +41,9 @@ export const loop = () => {
 
   // Execute tower logic
   for (const towerId of Memory.towerIds) {
-    runTowerController(towerId);
+    const tower = Game.getObjectById(towerId);
+    if (tower) {
+      runTowerController(tower);
+    }
   }
 };

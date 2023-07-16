@@ -47,6 +47,8 @@ export const runScheduledTasks = () => {
       if (containers.length > 0) Memory.mainStorageId = containers[0].id;
     }
 
-    // TODO When a container is built at one distance from a source, set a memory for the miner to adapt to container mining
+    // TODO When a container is built at a distance of one from a source, set mode to container_mining
+
+    // TODO When a link is built at a distance of one from a source, set mode to link_mining
   }
 };
