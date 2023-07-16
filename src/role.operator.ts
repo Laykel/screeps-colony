@@ -1,6 +1,7 @@
 import {
   findClosestStructure,
   handleRecharging,
+  isStructureOneOf,
   transferToSpawn,
   withdrawEnergy,
 } from './shared.logic';
@@ -55,7 +56,7 @@ export const runOperatorRole = (creep: Creep) => {
           // Strengthen the fortifications
           const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
-              structure.structureType in [STRUCTURE_WALL, STRUCTURE_RAMPART] &&
+              isStructureOneOf(structure.structureType, [STRUCTURE_WALL, STRUCTURE_RAMPART]) &&
               structure.hits < Memory.fortificationsMaxHits,
           });
 

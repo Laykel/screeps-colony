@@ -1,3 +1,5 @@
+import { isStructureOneOf } from './shared.logic';
+
 export const runTowerController = (tower: StructureTower) => {
   const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
@@ -9,8 +11,11 @@ export const runTowerController = (tower: StructureTower) => {
     // TODO Repair towers?
     const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
       filter: structure =>
-        structure.structureType in [STRUCTURE_ROAD, STRUCTURE_CONTAINER, STRUCTURE_STORAGE] &&
-        structure.hits < structure.hitsMax,
+        isStructureOneOf(structure.structureType, [
+          STRUCTURE_ROAD,
+          STRUCTURE_CONTAINER,
+          STRUCTURE_STORAGE,
+        ]) && structure.hits < structure.hitsMax,
     });
 
     if (closestDamagedStructure) {

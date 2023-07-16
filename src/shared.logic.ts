@@ -1,4 +1,9 @@
 // Finding things ---------------------------------------------------
+export const isStructureOneOf = (
+  structureType: StructureConstant,
+  structureTypeList: StructureConstant[],
+) => structureTypeList.includes(structureType);
+
 export const getCreepsMemoryByRole = (role: CreepRole): CreepMemory[] =>
   Object.values(Memory.creeps).filter(creepMemory => creepMemory.role === role);
 
