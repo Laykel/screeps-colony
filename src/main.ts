@@ -2,21 +2,25 @@ import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { runTowerController } from './controller.tower';
 import { runScheduledTasks } from './scheduled';
-
-// TODO Have emergency allocation when rampart, container, or other is about to die/under a certain threshold
+import { firstRoomMemory } from './shared.logic';
 
 const initMemory = () => {
+  // Set basic info
   Memory.startingTick = Game.time;
   Memory.mode = 'game_start';
-
   Memory.firstSpawnName = 'Spawn1';
+
   const firstSpawn = Game.spawns[Memory.firstSpawnName];
   Memory.firstRoomName = firstSpawn.room.name;
 
-  Memory.sourceIds = firstSpawn.room.find(FIND_SOURCES).map(source => source.id);
-  Memory.towerIds = [];
+  // Room memory
+  const roomMemory = firstRoomMemory();
 
-  Memory.fortificationsMaxHits = 1000;
+  roomMemory.sources = firstSpawn.room.find(FIND_SOURCES).map(source => source.id);
+  roomMemory.towers = [];
+  roomMemory.links = [];
+
+  roomMemory.fortificationsMaxHits = 1000;
 };
 
 export const loop = () => {
@@ -40,7 +44,7 @@ export const loop = () => {
   }
 
   // Execute tower logic
-  for (const towerId of Memory.towerIds) {
+  for (const towerId of firstRoomMemory().towers) {
     const tower = Game.getObjectById(towerId);
     if (tower) {
       runTowerController(tower);

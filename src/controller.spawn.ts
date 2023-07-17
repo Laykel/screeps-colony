@@ -1,4 +1,4 @@
-import { getCreepsMemoryByRole } from './shared.logic';
+import { firstRoomMemory, getCreepsMemoryByRole } from './shared.logic';
 
 const names: { [key in CreepRole]: string } = {
   harvester: 'Harvey',
@@ -106,34 +106,36 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
 
 const assignedSourceId = (role: CreepRole): Id<Source> => {
   // TODO Rework this. Maybe assign a "main source id" and "upgrader source id" manually...
+  const sourceIds = firstRoomMemory().sources;
+
   switch (role) {
     case 'miner':
       return (
-        Memory.sourceIds.filter(
+        sourceIds.filter(
           id =>
             !getCreepsMemoryByRole('miner')
               .map(memory => memory.sourceId)
               .includes(id),
-        )[0] ?? Memory.sourceIds[0]
+        )[0] ?? sourceIds[0]
       );
     case 'transporter':
       return (
-        Memory.sourceIds.filter(
+        sourceIds.filter(
           id =>
             !getCreepsMemoryByRole('transporter')
               .map(memory => memory.sourceId)
               .includes(id),
-        )[0] ?? Memory.sourceIds[0]
+        )[0] ?? sourceIds[0]
       );
     case 'upgrader':
       return (
-        Memory.sourceIds.filter(
+        sourceIds.filter(
           id =>
             id !==
             Game.rooms[Memory.firstRoomName].controller?.pos.findClosestByPath(FIND_SOURCES)?.id,
-        )[0] ?? Memory.sourceIds[0]
+        )[0] ?? sourceIds[0]
       );
     default:
-      return Memory.sourceIds[0];
+      return sourceIds[0];
   }
 };

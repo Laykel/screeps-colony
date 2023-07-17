@@ -1,4 +1,5 @@
 type Mode = 'game_start' | 'static_mining';
+
 type CreepRole =
   | 'harvester'
   | 'miner'
@@ -8,6 +9,15 @@ type CreepRole =
   | 'upgrader'
   | 'builder';
 
+type RoomState = {
+  sources: Id<Source>[];
+  towers: Id<StructureTower>[];
+  fortificationsMaxHits: number;
+
+  mainStorage?: Id<StructureContainer>;
+  containerLink?: Id<StructureLink>;
+};
+
 // This gets filled in at the very start of the first tick
 interface Memory {
   startingTick: number;
@@ -15,11 +25,15 @@ interface Memory {
 
   firstSpawnName: string;
   firstRoomName: string;
+}
 
-  // TODO When going multi-room, this needs to be per-room
-  sourceIds: Id<Source>[];
-  towerIds: Id<StructureTower>[];
-  mainStorageId?: Id<StructureContainer>;
+interface RoomMemory {
+  sources: Id<Source>[];
+
+  mainStorage?: Id<StructureContainer>;
+
+  towers: Id<StructureTower>[];
+  links: Id<StructureLink>[];
 
   fortificationsMaxHits: number;
 }
@@ -30,8 +44,6 @@ interface CreepMemory {
   recharging: boolean;
   sourceId?: Id<Source>;
 }
-
-// interface RoomMemory {}
 
 // interface FlagMemory {}
 // interface SpawnMemory {}

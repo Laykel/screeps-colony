@@ -2,3 +2,5 @@ node_modules/
 build
 
 .creds.json
+
+.vscode

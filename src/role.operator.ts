@@ -1,5 +1,6 @@
 import {
   findClosestStructure,
+  firstRoomMemory,
   handleRecharging,
   isStructureOneOf,
   transferToSpawn,
@@ -12,26 +13,27 @@ import {
 // TODO Refilling the spawn/extensions and towers is next in priority
 // TODO There should always be one upgrading
 // TODO One creep per mission, unless a great volume exists
-type MissionType = 'refill_spawn' | 'refill_tower' | 'repair' | 'upgrade' | 'fortify' | 'awaiting';
+type MissionType = 'refill_spawn' | 'refill_tower' | 'repair' | 'fortify' | 'awaiting';
 
 type MissionStatement =
   | {
       type: 'awaiting';
     }
-  | { type: 'upgrade'; source: Id<StructureContainer> | Id<Source> }
-  | { type: 'refill'; target: Id<StructureTower> };
+  | { type: 'refill_spawn'; target: Id<StructureContainer> }
+  | { type: 'refill_tower'; target: Id<StructureTower> };
 
 const test = () => {
   const statement: MissionStatement = {
-    type: 'upgrade',
-    source: '' as Id<Source>,
+    type: 'refill_spawn',
+    target: '' as Id<StructureContainer>,
   };
 
   console.log(statement);
 };
 
 export const runOperatorRole = (creep: Creep) => {
-  if (Memory.mode !== 'static_mining' || !Memory.mainStorageId) return;
+  const mainStorageId = firstRoomMemory().mainStorage;
+  if (Memory.mode !== 'static_mining' || !mainStorageId) return;
 
   handleRecharging(creep, 'operate');
 
@@ -42,7 +44,7 @@ export const runOperatorRole = (creep: Creep) => {
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {
       transferToSpawn(creep);
     } else {
-      const storage = Game.getObjectById(Memory.mainStorageId);
+      const storage = Game.getObjectById(mainStorageId);
 
       if (storage && storage.store.energy > 600) {
         // Refill tower
@@ -54,15 +56,17 @@ export const runOperatorRole = (creep: Creep) => {
           }
         } else {
           // Strengthen the fortifications
+          const maxHits = firstRoomMemory().fortificationsMaxHits;
+
           const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
               isStructureOneOf(structure.structureType, [STRUCTURE_WALL, STRUCTURE_RAMPART]) &&
-              structure.hits < Memory.fortificationsMaxHits,
+              structure.hits < maxHits,
           });
 
-          if (!target) {
+          if (!target && maxHits <= 10_000_000) {
             // Steadily increase hit points for the fortifications
-            Memory.fortificationsMaxHits += 1000;
+            firstRoomMemory().fortificationsMaxHits += 1000;
           }
 
           if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {

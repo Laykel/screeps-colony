@@ -1,9 +1,42 @@
+import { firstRoomMemory } from './shared.logic';
+
 // Remove any dead creep from memory
 const cleanupMemory = () => {
   for (const name in Memory.creeps) {
     if (Game.creeps[name] === undefined) {
       // TODO Here push to spawn queue if applicable
       delete Memory.creeps[name];
+    }
+  }
+};
+
+const checkAndUpdateState = (firstRoom: Room) => {
+  // Once we arrive at 550 energy capacity, activate static mining mode
+  if (Memory.mode === 'game_start' && firstRoom.energyCapacityAvailable >= 550) {
+    Memory.mode = 'static_mining';
+  }
+
+  // When the first container is built, set its id in memory
+  if (!firstRoomMemory().mainStorage) {
+    const containers = firstRoom.find(FIND_STRUCTURES, {
+      filter: structure => structure.structureType === STRUCTURE_CONTAINER,
+    }) as StructureContainer[];
+
+    if (containers.length > 0) firstRoomMemory().mainStorage = containers[0].id;
+  }
+};
+
+const checkForTowers = (firstRoom: Room) => {
+  const towers = firstRoom.find(FIND_STRUCTURES, {
+    filter: structure => structure.structureType === STRUCTURE_TOWER,
+  }) as StructureTower[];
+
+  // Add any new tower to memory
+  for (const tower of towers) {
+    const towerIds = firstRoomMemory().towers;
+
+    if (!towerIds.includes(tower.id)) {
+      towerIds.push(tower.id);
     }
   }
 };
@@ -16,16 +49,7 @@ export const runScheduledTasks = () => {
   if (Game.time % 19 === 0) {
     const firstRoom = Game.rooms[Memory.firstRoomName];
 
-    // Add any new tower to Memory.towerIds
-    const towers = firstRoom.find(FIND_STRUCTURES, {
-      filter: structure => structure.structureType === STRUCTURE_TOWER,
-    }) as StructureTower[];
-
-    for (const tower of towers) {
-      if (!Memory.towerIds.includes(tower.id)) {
-        Memory.towerIds.push(tower.id);
-      }
-    }
+    checkForTowers(firstRoom);
 
     console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
   }
@@ -33,22 +57,6 @@ export const runScheduledTasks = () => {
   if (Game.time % 31 === 0) {
     const firstRoom = Game.rooms[Memory.firstRoomName];
 
-    // Once we arrive at 550 energyCapacityAvailable, activate static mining mode
-    if (Memory.mode === 'game_start' && firstRoom.energyCapacityAvailable >= 550) {
-      Memory.mode = 'static_mining';
-    }
-
-    // When the first container is made, set its id in memory
-    if (!Memory.mainStorageId) {
-      const containers = firstRoom.find(FIND_STRUCTURES, {
-        filter: structure => structure.structureType === STRUCTURE_CONTAINER,
-      }) as StructureContainer[];
-
-      if (containers.length > 0) Memory.mainStorageId = containers[0].id;
-    }
-
-    // TODO When a container is built at a distance of one from a source, set mode to container_mining
-
-    // TODO When a link is built at a distance of one from a source, set mode to link_mining
+    checkAndUpdateState(firstRoom);
   }
 };

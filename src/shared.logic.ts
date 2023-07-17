@@ -1,4 +1,8 @@
 // Finding things ---------------------------------------------------
+export const firstRoomMemory = () => Game.rooms[Memory.firstRoomName].memory;
+
+export const firstSpawnMemory = () => Game.spawns[Memory.firstSpawnName].memory;
+
 export const isStructureOneOf = (
   structureType: StructureConstant,
   structureTypeList: StructureConstant[],
@@ -67,9 +71,11 @@ export const harvestFromSource = (creep: Creep) => {
 };
 
 export const withdrawFromContainer = (creep: Creep) => {
+  const mainStorageId = firstRoomMemory().mainStorage;
+
   let storage;
-  if (Memory.mainStorageId) {
-    storage = Game.getObjectById(Memory.mainStorageId);
+  if (mainStorageId) {
+    storage = Game.getObjectById(mainStorageId);
   } else {
     storage = findStructureInRoom(creep.room, STRUCTURE_CONTAINER) as StructureContainer;
   }
@@ -84,7 +90,7 @@ export const withdrawFromContainer = (creep: Creep) => {
 };
 
 export const withdrawEnergy = (creep: Creep) => {
-  if (Memory.mainStorageId) {
+  if (firstRoomMemory().mainStorage) {
     // TODO Withdraw from main storage
     withdrawFromContainer(creep);
   } else {
@@ -102,8 +108,10 @@ export const transferToContainer = (creep: Creep) => {
 };
 
 export const transferToMainStorage = (creep: Creep) => {
-  if (Memory.mainStorageId) {
-    const storage = Game.getObjectById(Memory.mainStorageId);
+  const mainStorageId = firstRoomMemory().mainStorage;
+
+  if (mainStorageId) {
+    const storage = Game.getObjectById(mainStorageId);
 
     if (storage && creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
       creep.moveTo(storage);
