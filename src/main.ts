@@ -1,27 +1,9 @@
 import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { runTowerController } from './controller.tower';
-import { runScheduledTasks } from './scheduled';
+import { runRoomScheduledTasks, runScheduledTasks } from './scheduled';
 import { firstRoomMemory } from './shared.logic';
-
-const initMemory = () => {
-  // Set basic info
-  Memory.startingTick = Game.time;
-  Memory.mode = 'game_start';
-  Memory.firstSpawnName = 'Spawn1';
-
-  const firstSpawn = Game.spawns[Memory.firstSpawnName];
-  Memory.firstRoomName = firstSpawn.room.name;
-
-  // Room memory
-  const roomMemory = firstRoomMemory();
-
-  roomMemory.sources = firstSpawn.room.find(FIND_SOURCES).map(source => source.id);
-  roomMemory.towers = [];
-  roomMemory.links = [];
-
-  roomMemory.fortificationsMaxHits = 1000;
-};
+import { initMemory, initRoomMemory } from './memory';
 
 export const loop = () => {
   if (!Memory.startingTick) {
@@ -30,6 +12,17 @@ export const loop = () => {
 
   // Execute tasks that don't run every tick
   runScheduledTasks();
+
+  // Run tasks specific to each room
+  for (const name in Game.rooms) {
+    const room = Game.rooms[name];
+
+    if (!room.memory.sources) {
+      initRoomMemory(room);
+    }
+
+    runRoomScheduledTasks(room);
+  }
 
   // Spawn creeps if applicable
   for (const name in Game.spawns) {

@@ -9,15 +9,7 @@ type CreepRole =
   | 'upgrader'
   | 'builder';
 
-type RoomState = {
-  sources: Id<Source>[];
-  towers: Id<StructureTower>[];
-  fortificationsMaxHits: number;
-
-  mainStorage?: Id<StructureContainer>;
-  containerLink?: Id<StructureLink>;
-};
-
+// ------------------------------------------------------------------------------
 // This gets filled in at the very start of the first tick
 interface Memory {
   startingTick: number;
@@ -45,5 +37,6 @@ interface CreepMemory {
   sourceId?: Id<Source>;
 }
 
-// interface FlagMemory {}
+// TODO Set up the spawn queue (weighted queue?)
+// TODO Make sure an item is added early (based on distance and movement speed)
 // interface SpawnMemory {}

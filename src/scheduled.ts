@@ -1,5 +1,3 @@
-import { firstRoomMemory } from './shared.logic';
-
 // Remove any dead creep from memory
 const cleanupMemory = () => {
   for (const name in Memory.creeps) {
@@ -10,30 +8,30 @@ const cleanupMemory = () => {
   }
 };
 
-const checkAndUpdateState = (firstRoom: Room) => {
+const checkAndUpdateState = (room: Room) => {
   // Once we arrive at 550 energy capacity, activate static mining mode
-  if (Memory.mode === 'game_start' && firstRoom.energyCapacityAvailable >= 550) {
+  if (Memory.mode === 'game_start' && room.energyCapacityAvailable >= 550) {
     Memory.mode = 'static_mining';
   }
 
   // When the first container is built, set its id in memory
-  if (!firstRoomMemory().mainStorage) {
-    const containers = firstRoom.find(FIND_STRUCTURES, {
+  if (!room.memory.mainStorage) {
+    const containers = room.find(FIND_STRUCTURES, {
       filter: structure => structure.structureType === STRUCTURE_CONTAINER,
     }) as StructureContainer[];
 
-    if (containers.length > 0) firstRoomMemory().mainStorage = containers[0].id;
+    if (containers.length > 0) room.memory.mainStorage = containers[0].id;
   }
 };
 
-const checkForTowers = (firstRoom: Room) => {
-  const towers = firstRoom.find(FIND_STRUCTURES, {
+const checkForTowers = (room: Room) => {
+  const towers = room.find(FIND_STRUCTURES, {
     filter: structure => structure.structureType === STRUCTURE_TOWER,
   }) as StructureTower[];
 
   // Add any new tower to memory
   for (const tower of towers) {
-    const towerIds = firstRoomMemory().towers;
+    const towerIds = room.memory.towers;
 
     if (!towerIds.includes(tower.id)) {
       towerIds.push(tower.id);
@@ -45,18 +43,16 @@ export const runScheduledTasks = () => {
   if (Game.time % 7 === 0) {
     cleanupMemory();
   }
+};
 
+export const runRoomScheduledTasks = (room: Room) => {
   if (Game.time % 19 === 0) {
-    const firstRoom = Game.rooms[Memory.firstRoomName];
-
-    checkForTowers(firstRoom);
+    checkForTowers(room);
 
     console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
   }
 
   if (Game.time % 31 === 0) {
-    const firstRoom = Game.rooms[Memory.firstRoomName];
-
-    checkAndUpdateState(firstRoom);
+    checkAndUpdateState(room);
   }
 };

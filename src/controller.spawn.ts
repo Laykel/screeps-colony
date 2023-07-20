@@ -22,7 +22,7 @@ const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstan
 
 // This strategy isn't great at every energy level...
 const balancedBody = (energy: number): BodyPartConstant[] => {
-  const numberOfCarry = energy >= 800 ? 2 : 1;
+  const numberOfCarry = energy >= 800 ? 4 : 1;
   let energyLeft = energy - numberOfCarry * 50;
 
   const numberOfWork = Math.floor(energyLeft / 150);
@@ -74,7 +74,7 @@ const chooseRole = (): CreepRole | null => {
     }
   }
 
-  if (upgraders.length < 3) {
+  if (upgraders.length < 2) {
     return 'upgrader';
   }
 

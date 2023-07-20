@@ -59,9 +59,9 @@ export const pickupFromAssignedDrop = (creep: Creep) => {
 };
 
 export const harvestFromSource = (creep: Creep) => {
-  const source = creep.pos.findClosestByPath(FIND_SOURCES);
+  const source = creep.pos.findClosestByPath(FIND_SOURCES, { filter: source => source.energy > 0 });
   if (!source) {
-    console.log(`No source found by creep ${creep.name}`);
+    console.log(`No non-empty source found by creep ${creep.name}`);
     return;
   }
 
@@ -90,8 +90,7 @@ export const withdrawFromContainer = (creep: Creep) => {
 };
 
 export const withdrawEnergy = (creep: Creep) => {
-  if (firstRoomMemory().mainStorage) {
-    // TODO Withdraw from main storage
+  if (creep.room.memory.mainStorage) {
     withdrawFromContainer(creep);
   } else {
     harvestFromSource(creep);

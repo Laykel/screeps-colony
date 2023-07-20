@@ -13,23 +13,23 @@ import {
 // TODO Refilling the spawn/extensions and towers is next in priority
 // TODO There should always be one upgrading
 // TODO One creep per mission, unless a great volume exists
-type MissionType = 'refill_spawn' | 'refill_tower' | 'repair' | 'fortify' | 'awaiting';
+// type MissionType = 'refill_spawn' | 'refill_tower' | 'repair' | 'fortify' | 'awaiting';
 
-type MissionStatement =
-  | {
-      type: 'awaiting';
-    }
-  | { type: 'refill_spawn'; target: Id<StructureContainer> }
-  | { type: 'refill_tower'; target: Id<StructureTower> };
+// type MissionStatement =
+//   | {
+//       type: 'awaiting';
+//     }
+//   | { type: 'refill_spawn'; target: Id<StructureContainer> }
+//   | { type: 'refill_tower'; target: Id<StructureTower> };
 
-const test = () => {
-  const statement: MissionStatement = {
-    type: 'refill_spawn',
-    target: '' as Id<StructureContainer>,
-  };
+// const test = () => {
+//   const statement: MissionStatement = {
+//     type: 'refill_spawn',
+//     target: '' as Id<StructureContainer>,
+//   };
 
-  console.log(statement);
-};
+//   console.log(statement);
+// };
 
 export const runOperatorRole = (creep: Creep) => {
   const mainStorageId = firstRoomMemory().mainStorage;
