@@ -8,8 +8,8 @@ export const isStructureOneOf = (
   structureTypeList: StructureConstant[],
 ) => structureTypeList.includes(structureType);
 
-export const getCreepsMemoryByRole = (role: CreepRole): CreepMemory[] =>
-  Object.values(Memory.creeps).filter(creepMemory => creepMemory.role === role);
+export const getRoomCreepsMemoryByRole = (roomName: string, role: CreepRole): CreepMemory[] =>
+  Object.values(Memory.creeps).filter(memory => memory.room === roomName && memory.role === role);
 
 export const findStructureInRoom = (room: Room, structureType: StructureConstant) => {
   return room.find(FIND_STRUCTURES, {

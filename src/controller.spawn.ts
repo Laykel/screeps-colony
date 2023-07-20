@@ -1,4 +1,4 @@
-import { firstRoomMemory, getCreepsMemoryByRole } from './shared.logic';
+import { getRoomCreepsMemoryByRole } from './shared.logic';
 
 const names: { [key in CreepRole]: string } = {
   harvester: 'Harvey',
@@ -43,13 +43,13 @@ const scoutBody = (energy: number): BodyPartConstant[] => {
 };
 
 // TODO Adapt number of creeps based on energy level in containers, and number of extensions (energyCapacityAvailable)
-const chooseRole = (): CreepRole | null => {
-  const harvesters = getCreepsMemoryByRole('harvester');
-  const miners = getCreepsMemoryByRole('miner');
-  const transporters = getCreepsMemoryByRole('transporter');
-  const operators = getCreepsMemoryByRole('operator');
-  const upgraders = getCreepsMemoryByRole('upgrader');
-  const builders = getCreepsMemoryByRole('builder');
+const chooseRole = (roomName: string): CreepRole | null => {
+  const harvesters = getRoomCreepsMemoryByRole(roomName, 'harvester');
+  const miners = getRoomCreepsMemoryByRole(roomName, 'miner');
+  const transporters = getRoomCreepsMemoryByRole(roomName, 'transporter');
+  const operators = getRoomCreepsMemoryByRole(roomName, 'operator');
+  const upgraders = getRoomCreepsMemoryByRole(roomName, 'upgrader');
+  const builders = getRoomCreepsMemoryByRole(roomName, 'builder');
 
   if (Memory.mode === 'static_mining') {
     // TODO IMPORTANT Replace this nonsense with a queue in the spawner
@@ -90,7 +90,7 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
 
   // Check if max energy capacity is reached, then spawn
   if (energyAvailable === spawn.room.energyCapacityAvailable) {
-    const role = chooseRole();
+    const role = chooseRole(spawn.room.name);
 
     if (role === null) return;
 
@@ -98,22 +98,27 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
       bodies[role](energyAvailable),
       `${names[role]}-${tick - Memory.startingTick}`,
       {
-        memory: { role, recharging: true, sourceId: assignedSourceId(role) },
+        memory: {
+          role,
+          recharging: true,
+          sourceId: assignedSourceId(spawn.room, role),
+          room: spawn.room.name,
+        },
       },
     );
   }
 };
 
-const assignedSourceId = (role: CreepRole): Id<Source> => {
+const assignedSourceId = (room: Room, role: CreepRole): Id<Source> => {
   // TODO Rework this. Maybe assign a "main source id" and "upgrader source id" manually...
-  const sourceIds = firstRoomMemory().sources;
+  const sourceIds = room.memory.sources;
 
   switch (role) {
     case 'miner':
       return (
         sourceIds.filter(
           id =>
-            !getCreepsMemoryByRole('miner')
+            !getRoomCreepsMemoryByRole(room.name, 'miner')
               .map(memory => memory.sourceId)
               .includes(id),
         )[0] ?? sourceIds[0]
@@ -122,7 +127,7 @@ const assignedSourceId = (role: CreepRole): Id<Source> => {
       return (
         sourceIds.filter(
           id =>
-            !getCreepsMemoryByRole('transporter')
+            !getRoomCreepsMemoryByRole(room.name, 'transporter')
               .map(memory => memory.sourceId)
               .includes(id),
         )[0] ?? sourceIds[0]

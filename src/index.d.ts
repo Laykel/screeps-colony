@@ -32,6 +32,7 @@ interface RoomMemory {
 
 // TODO Use discriminated unions
 interface CreepMemory {
+  room: string;
   role: CreepRole;
   recharging: boolean;
   sourceId?: Id<Source>;
