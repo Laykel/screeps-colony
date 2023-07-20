@@ -5,7 +5,7 @@ export const runUpgraderRole = (creep: Creep) => {
 
   if (creep.memory.recharging) {
     // TODO Currently too dependent on room layout, will need to check closest container OR dropped resources with at least 100
-    if (Memory.mode === 'static_mining') {
+    if (creep.room.memory.mode === 'static_mining') {
       pickupFromAssignedDrop(creep);
     } else {
       withdrawEnergy(creep);

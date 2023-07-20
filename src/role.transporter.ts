@@ -7,7 +7,7 @@ import {
 } from './shared.logic';
 
 export const runTransporterRole = (creep: Creep) => {
-  if (Memory.mode !== 'static_mining') return;
+  if (creep.room.memory.mode !== 'static_mining') return;
 
   handleRecharging(creep, 'transport');
 

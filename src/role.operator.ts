@@ -33,7 +33,7 @@ import {
 
 export const runOperatorRole = (creep: Creep) => {
   const mainStorageId = firstRoomMemory().mainStorage;
-  if (Memory.mode !== 'static_mining' || !mainStorageId) return;
+  if (creep.room.memory.mode !== 'static_mining' || !mainStorageId) return;
 
   handleRecharging(creep, 'operate');
 
@@ -64,7 +64,7 @@ export const runOperatorRole = (creep: Creep) => {
               structure.hits < maxHits,
           });
 
-          if (!target && maxHits <= 10_000_000) {
+          if (!target && maxHits <= 1_000_000) {
             // Steadily increase hit points for the fortifications
             firstRoomMemory().fortificationsMaxHits += 1000;
           }

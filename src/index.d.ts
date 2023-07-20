@@ -13,16 +13,16 @@ type CreepRole =
 // This gets filled in at the very start of the first tick
 interface Memory {
   startingTick: number;
-  mode: Mode;
 
   firstSpawnName: string;
   firstRoomName: string;
 }
 
 interface RoomMemory {
+  mode: Mode;
   sources: Id<Source>[];
 
-  mainStorage?: Id<StructureContainer>;
+  mainStorage: Id<StructureContainer> | null;
 
   towers: Id<StructureTower>[];
   links: Id<StructureLink>[];

@@ -10,8 +10,8 @@ const cleanupMemory = () => {
 
 const checkAndUpdateState = (room: Room) => {
   // Once we arrive at 550 energy capacity, activate static mining mode
-  if (Memory.mode === 'game_start' && room.energyCapacityAvailable >= 550) {
-    Memory.mode = 'static_mining';
+  if (room.memory.mode === 'game_start' && room.energyCapacityAvailable >= 550) {
+    room.memory.mode = 'static_mining';
   }
 
   // When the first container is built, set its id in memory
