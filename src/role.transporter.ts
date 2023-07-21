@@ -1,5 +1,4 @@
 import {
-  firstRoomMemory,
   handleRecharging,
   pickupFromAssignedDrop,
   transferToMainStorage,
@@ -15,7 +14,7 @@ export const runTransporterRole = (creep: Creep) => {
     pickupFromAssignedDrop(creep);
   } else {
     // Fill main storage if there is one
-    if (firstRoomMemory().mainStorage) {
+    if (creep.room.memory.mainStorage) {
       // TODO Consider filling the spawn first if there are no operators
       transferToMainStorage(creep);
     } else {

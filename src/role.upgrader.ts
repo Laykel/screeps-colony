@@ -1,4 +1,4 @@
-import { handleRecharging, pickupFromAssignedDrop, withdrawEnergy } from './shared.logic';
+import { handleRecharging, withdrawEnergy } from './shared.logic';
 
 export const runUpgraderRole = (creep: Creep) => {
   handleRecharging(creep, 'upgrade');
@@ -6,7 +6,11 @@ export const runUpgraderRole = (creep: Creep) => {
   if (creep.memory.recharging) {
     // TODO Currently too dependent on room layout, will need to check closest container OR dropped resources with at least 100
     if (creep.room.memory.mode === 'static_mining') {
-      pickupFromAssignedDrop(creep);
+      const dropped = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+
+      if (dropped && creep.pickup(dropped) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(dropped);
+      }
     } else {
       withdrawEnergy(creep);
     }

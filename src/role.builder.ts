@@ -1,4 +1,4 @@
-import { findClosest, firstRoomMemory, handleRecharging, withdrawEnergy } from './shared.logic';
+import { findClosest, handleRecharging, withdrawEnergy } from './shared.logic';
 
 export const runBuilderRole = (creep: Creep) => {
   handleRecharging(creep, 'build');
@@ -6,7 +6,7 @@ export const runBuilderRole = (creep: Creep) => {
   if (creep.memory.recharging) {
     withdrawEnergy(creep);
   } else {
-    const mainStorageId = firstRoomMemory().mainStorage;
+    const mainStorageId = creep.room.memory.mainStorage;
     const storage = mainStorageId && Game.getObjectById(mainStorageId);
 
     if (!storage || storage.store.energy > 1200) {

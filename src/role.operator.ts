@@ -1,6 +1,5 @@
 import {
   findClosestStructure,
-  firstRoomMemory,
   handleRecharging,
   isStructureOneOf,
   transferToSpawn,
@@ -32,7 +31,7 @@ import {
 // };
 
 export const runOperatorRole = (creep: Creep) => {
-  const mainStorageId = firstRoomMemory().mainStorage;
+  const mainStorageId = creep.room.memory.mainStorage;
   if (creep.room.memory.mode !== 'static_mining' || !mainStorageId) return;
 
   handleRecharging(creep, 'operate');
@@ -56,7 +55,7 @@ export const runOperatorRole = (creep: Creep) => {
           }
         } else {
           // Strengthen the fortifications
-          const maxHits = firstRoomMemory().fortificationsMaxHits;
+          const maxHits = creep.room.memory.fortificationsMaxHits;
 
           const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
@@ -66,7 +65,7 @@ export const runOperatorRole = (creep: Creep) => {
 
           if (!target && maxHits <= 1_000_000) {
             // Steadily increase hit points for the fortifications
-            firstRoomMemory().fortificationsMaxHits += 1000;
+            creep.room.memory.fortificationsMaxHits += 1000;
           }
 
           if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {

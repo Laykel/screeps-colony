@@ -1,8 +1,4 @@
 // Finding things ---------------------------------------------------
-export const firstRoomMemory = () => Game.rooms[Memory.firstRoomName].memory;
-
-export const firstSpawnMemory = () => Game.spawns[Memory.firstSpawnName].memory;
-
 export const isStructureOneOf = (
   structureType: StructureConstant,
   structureTypeList: StructureConstant[],
@@ -71,7 +67,7 @@ export const harvestFromSource = (creep: Creep) => {
 };
 
 export const withdrawFromContainer = (creep: Creep) => {
-  const mainStorageId = firstRoomMemory().mainStorage;
+  const mainStorageId = creep.room.memory.mainStorage;
 
   let storage;
   if (mainStorageId) {
@@ -107,7 +103,7 @@ export const transferToContainer = (creep: Creep) => {
 };
 
 export const transferToMainStorage = (creep: Creep) => {
-  const mainStorageId = firstRoomMemory().mainStorage;
+  const mainStorageId = creep.room.memory.mainStorage;
 
   if (mainStorageId) {
     const storage = Game.getObjectById(mainStorageId);

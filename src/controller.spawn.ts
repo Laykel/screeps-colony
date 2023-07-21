@@ -43,15 +43,15 @@ const scoutBody = (energy: number): BodyPartConstant[] => {
 };
 
 // TODO Adapt number of creeps based on energy level in containers, and number of extensions (energyCapacityAvailable)
-const chooseRole = (roomName: string, roomMode: Mode): CreepRole | null => {
-  const harvesters = getRoomCreepsMemoryByRole(roomName, 'harvester');
-  const miners = getRoomCreepsMemoryByRole(roomName, 'miner');
-  const transporters = getRoomCreepsMemoryByRole(roomName, 'transporter');
-  const operators = getRoomCreepsMemoryByRole(roomName, 'operator');
-  const upgraders = getRoomCreepsMemoryByRole(roomName, 'upgrader');
-  const builders = getRoomCreepsMemoryByRole(roomName, 'builder');
+const chooseRole = (room: Room): CreepRole | null => {
+  const harvesters = getRoomCreepsMemoryByRole(room.name, 'harvester');
+  const miners = getRoomCreepsMemoryByRole(room.name, 'miner');
+  const transporters = getRoomCreepsMemoryByRole(room.name, 'transporter');
+  const operators = getRoomCreepsMemoryByRole(room.name, 'operator');
+  const upgraders = getRoomCreepsMemoryByRole(room.name, 'upgrader');
+  const builders = getRoomCreepsMemoryByRole(room.name, 'builder');
 
-  if (roomMode === 'static_mining') {
+  if (room.memory.mode === 'static_mining') {
     // TODO IMPORTANT Replace this nonsense with a queue in the spawner
     // Make sure a harvester stays around as long as no transporters are there
     if (harvesters.length < 1 && transporters.length < 1 && operators.length < 1) {
@@ -65,7 +65,7 @@ const chooseRole = (roomName: string, roomMode: Mode): CreepRole | null => {
     if (transporters.length < 2) {
       return 'transporter';
     }
-    if (operators.length < 2) {
+    if (room.memory.mainStorage && operators.length < 2) {
       return 'operator';
     }
   } else {
@@ -79,7 +79,7 @@ const chooseRole = (roomName: string, roomMode: Mode): CreepRole | null => {
   }
 
   if (
-    Object.keys(Object.values(Game.constructionSites).filter(site => site.room?.name === roomName))
+    Object.keys(Object.values(Game.constructionSites).filter(site => site.room?.name === room.name))
       .length > 0 &&
     builders.length < 1
   ) {
@@ -94,7 +94,7 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
 
   // Check if max energy capacity is reached, then spawn
   if (energyAvailable === spawn.room.energyCapacityAvailable) {
-    const role = chooseRole(spawn.room.name, spawn.room.memory.mode);
+    const role = chooseRole(spawn.room);
 
     if (role === null) return;
 

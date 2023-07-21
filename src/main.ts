@@ -2,7 +2,6 @@ import { runSpawnController } from './controller.spawn';
 import { runCreepController } from './controller.creep';
 import { runTowerController } from './controller.tower';
 import { runRoomScheduledTasks, runScheduledTasks } from './scheduled';
-import { firstRoomMemory } from './shared.logic';
 import { initMemory, initRoomMemory } from './memory';
 
 export const loop = () => {
@@ -22,9 +21,17 @@ export const loop = () => {
     }
 
     runRoomScheduledTasks(room);
+
+    // Execute tower logic
+    for (const towerId of room.memory.towers) {
+      const tower = Game.getObjectById(towerId);
+      if (tower) {
+        runTowerController(tower);
+      }
+    }
   }
 
-  // Spawn creeps if applicable
+  // Spawn creeps if necessary
   for (const name in Game.spawns) {
     const spawn = Game.spawns[name];
     runSpawnController(spawn, Game.time);
@@ -36,11 +43,5 @@ export const loop = () => {
     runCreepController(creep);
   }
 
-  // Execute tower logic
-  for (const towerId of firstRoomMemory().towers) {
-    const tower = Game.getObjectById(towerId);
-    if (tower) {
-      runTowerController(tower);
-    }
-  }
+  console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
 };

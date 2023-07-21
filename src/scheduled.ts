@@ -48,8 +48,6 @@ export const runScheduledTasks = () => {
 export const runRoomScheduledTasks = (room: Room) => {
   if (Game.time % 19 === 0) {
     checkForTowers(room);
-
-    console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
   }
 
   if (Game.time % 31 === 0) {
