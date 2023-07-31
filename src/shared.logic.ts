@@ -13,12 +13,6 @@ export const findStructureInRoom = (room: Room, structureType: StructureConstant
   })[0];
 };
 
-export const findClosestStructure = (pos: RoomPosition, structureType: StructureConstant) => {
-  return pos.findClosestByPath(FIND_STRUCTURES, {
-    filter: structure => structure.structureType === structureType,
-  });
-};
-
 export const findClosest = (pos: RoomPosition, find: FindConstant, creepName = 'unknown') => {
   const target = pos.findClosestByPath(find);
 

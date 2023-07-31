@@ -1,5 +1,4 @@
 import {
-  findClosestStructure,
   handleRecharging,
   isStructureOneOf,
   transferToSpawn,
@@ -47,29 +46,29 @@ export const runOperatorRole = (creep: Creep) => {
 
       if (storage && storage.store.energy > 600) {
         // Refill tower
-        const tower = findClosestStructure(creep.pos, STRUCTURE_TOWER) as StructureTower | null;
+        const tower = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+          filter: structure =>
+            structure.structureType === STRUCTURE_TOWER && structure.store.energy < 800,
+        }) as StructureTower | null;
 
-        if (tower && tower.store.energy !== 1000) {
+        if (tower) {
           if (creep.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             creep.moveTo(tower);
           }
         } else {
           // Strengthen the fortifications
-          const maxHits = creep.room.memory.fortificationsMaxHits;
-
           const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
-              isStructureOneOf(structure.structureType, [STRUCTURE_WALL, STRUCTURE_RAMPART]) &&
-              structure.hits < maxHits,
+              isStructureOneOf(structure.structureType, [STRUCTURE_WALL, STRUCTURE_RAMPART]),
           });
 
-          if (!target && maxHits <= 1_000_000) {
+          if (target && creep.room.memory.fortificationsMaxHits <= 2_000_000) {
+            if (creep.repair(target) === ERR_NOT_IN_RANGE) {
+              creep.moveTo(target);
+            }
+
             // Steadily increase hit points for the fortifications
             creep.room.memory.fortificationsMaxHits += 1000;
-          }
-
-          if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(target);
           }
         }
       }
