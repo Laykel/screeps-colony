@@ -88,14 +88,6 @@ export const withdrawEnergy = (creep: Creep) => {
 };
 
 // Transferring energy ----------------------------------------------
-export const transferToContainer = (creep: Creep) => {
-  const container = findStructureInRoom(creep.room, STRUCTURE_CONTAINER);
-
-  if (container && creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-    creep.moveTo(container);
-  }
-};
-
 export const transferToMainStorage = (creep: Creep) => {
   const mainStorageId = creep.room.memory.mainStorage;
 

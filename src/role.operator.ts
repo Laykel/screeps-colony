@@ -1,3 +1,4 @@
+import { FORTIFICATION_HITS_STEP, GLOBAL_FORTIFICATIONS_MAX_HITS } from './constants';
 import {
   handleRecharging,
   isStructureOneOf,
@@ -48,7 +49,7 @@ export const runOperatorRole = (creep: Creep) => {
         // Refill tower
         const tower = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
           filter: structure =>
-            structure.structureType === STRUCTURE_TOWER && structure.store.energy < 800,
+            structure.structureType === STRUCTURE_TOWER && structure.store.energy < TOWER_CAPACITY,
         }) as StructureTower | null;
 
         if (tower) {
@@ -56,19 +57,22 @@ export const runOperatorRole = (creep: Creep) => {
             creep.moveTo(tower);
           }
         } else {
-          // Strengthen the fortifications
+          const maxHits = creep.room.memory.fortificationsMaxHits;
+
+          // TODO First check if walls exist...
           const target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: structure =>
-              isStructureOneOf(structure.structureType, [STRUCTURE_WALL, STRUCTURE_RAMPART]),
+              isStructureOneOf(structure.structureType, [STRUCTURE_WALL, STRUCTURE_RAMPART]) &&
+              structure.hits < maxHits,
           });
 
-          if (target && creep.room.memory.fortificationsMaxHits <= 2_000_000) {
-            if (creep.repair(target) === ERR_NOT_IN_RANGE) {
-              creep.moveTo(target);
-            }
-
+          if (!target && maxHits <= GLOBAL_FORTIFICATIONS_MAX_HITS) {
             // Steadily increase hit points for the fortifications
-            creep.room.memory.fortificationsMaxHits += 1000;
+            creep.room.memory.fortificationsMaxHits += FORTIFICATION_HITS_STEP;
+          }
+
+          if (target && creep.repair(target) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(target);
           }
         }
       }

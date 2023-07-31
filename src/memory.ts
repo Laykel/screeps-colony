@@ -1,3 +1,5 @@
+import { FORTIFICATION_HITS_STEP } from './constants';
+
 export const initMemory = () => {
   Memory.startingTick = Game.time;
   Memory.firstSpawnName = 'Spawn1';
@@ -14,5 +16,5 @@ export const initRoomMemory = (room: Room) => {
   room.memory.towers = [];
   room.memory.links = [];
 
-  room.memory.fortificationsMaxHits = 1000;
+  room.memory.fortificationsMaxHits = FORTIFICATION_HITS_STEP;
 };
