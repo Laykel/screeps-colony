@@ -1,6 +1,7 @@
 import { runBuilderRole } from './role.builder';
 import { runHarvesterRole } from './role.harvester';
 import { runMinerRole } from './role.miner';
+import { runMissionnerRole } from './role.missionner';
 import { runOperatorRole } from './role.operator';
 import { runTransporterRole } from './role.transporter';
 import { runUpgraderRole } from './role.upgrader';
@@ -24,6 +25,9 @@ export const runCreepController = (creep: Creep) => {
       break;
     case 'harvester':
       runHarvesterRole(creep);
+      break;
+    case 'missionner':
+      runMissionnerRole(creep);
       break;
   }
 };
