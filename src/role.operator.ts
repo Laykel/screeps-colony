@@ -38,6 +38,13 @@ export const runOperatorRole = (creep: Creep) => {
 
   if (creep.memory.recharging) {
     withdrawEnergy(creep);
+    // TODO Refine this timeout and apply it more globally
+    creep.memory.counter ? creep.memory.counter++ : (creep.memory.counter = 1);
+
+    if (creep.memory.counter > 5) {
+      creep.memory.counter = 0;
+      creep.memory.recharging = false;
+    }
   } else {
     // Refill spawn and extensions
     if (creep.room.energyAvailable !== creep.room.energyCapacityAvailable) {

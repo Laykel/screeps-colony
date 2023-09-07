@@ -1,4 +1,5 @@
 import {
+  getRoomCreepsMemoryByRole,
   handleRecharging,
   pickupFromAssignedDrop,
   transferToMainStorage,
@@ -13,6 +14,12 @@ export const runTransporterRole = (creep: Creep) => {
   if (creep.memory.recharging) {
     pickupFromAssignedDrop(creep);
 
+    creep.memory.counter ? creep.memory.counter++ : (creep.memory.counter = 1);
+
+    if (creep.memory.counter > 5) {
+      creep.memory.counter = 0;
+      creep.memory.recharging = false;
+    }
     // TODO Maybe transporters could also retrieve from ruins, drops, etc. if they're not too far
     // Or maybe that's more of an operator's job...
     // const ruin = Game.getObjectById('64c77e445785ed1db743c52d' as Id<Ruin>);
@@ -23,8 +30,13 @@ export const runTransporterRole = (creep: Creep) => {
   } else {
     // Fill main storage if there is one
     if (creep.room.memory.mainStorage) {
-      // TODO Consider filling the spawn first if there are no operators
-      transferToMainStorage(creep);
+      const operators = getRoomCreepsMemoryByRole(creep.room.name, 'operator');
+
+      if (operators.length === 0) {
+        transferToSpawn(creep);
+      } else {
+        transferToMainStorage(creep);
+      }
     } else {
       transferToSpawn(creep);
     }

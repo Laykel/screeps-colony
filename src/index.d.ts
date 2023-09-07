@@ -36,6 +36,7 @@ interface CreepMemory {
   role: CreepRole;
   recharging: boolean;
   sourceId?: Id<Source>;
+  counter?: number;
 }
 
 // TODO Set up the spawn queue (weighted queue?)

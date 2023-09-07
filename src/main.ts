@@ -43,5 +43,5 @@ export const loop = () => {
     runCreepController(creep);
   }
 
-  console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
+  // console.log(`Used CPU this tick: ${Game.cpu.getUsed()}`);
 };
