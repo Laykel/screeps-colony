@@ -13,13 +13,6 @@ export const runTransporterRole = (creep: Creep) => {
 
   if (creep.memory.recharging) {
     pickupFromAssignedDrop(creep);
-
-    creep.memory.counter ? creep.memory.counter++ : (creep.memory.counter = 1);
-
-    if (creep.memory.counter > 5) {
-      creep.memory.counter = 0;
-      creep.memory.recharging = false;
-    }
     // TODO Maybe transporters could also retrieve from ruins, drops, etc. if they're not too far
     // Or maybe that's more of an operator's job...
     // const ruin = Game.getObjectById('64c77e445785ed1db743c52d' as Id<Ruin>);

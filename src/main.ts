@@ -3,6 +3,7 @@ import { runCreepController } from './controller.creep';
 import { runTowerController } from './controller.tower';
 import { runRoomScheduledTasks, runScheduledTasks } from './scheduled';
 import { initMemory, initRoomMemory } from './memory';
+import { runLinkController } from './controller.link';
 
 export const loop = () => {
   if (!Memory.startingTick) {
@@ -23,10 +24,18 @@ export const loop = () => {
     runRoomScheduledTasks(room);
 
     // Execute tower logic
-    for (const towerId of room.memory.towers) {
-      const tower = Game.getObjectById(towerId);
+    for (const towerMemory of room.memory.towers) {
+      const tower = Game.getObjectById(towerMemory.id);
       if (tower) {
         runTowerController(tower);
+      }
+    }
+
+    // Execute link logic
+    for (const linkMemory of room.memory.links) {
+      const link = Game.getObjectById(linkMemory.id);
+      if (link) {
+        runLinkController(link, linkMemory);
       }
     }
   }

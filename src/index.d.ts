@@ -9,34 +9,47 @@ type CreepRole =
   | 'upgrader'
   | 'builder';
 
+type SourceMemory = {
+  id: Id<Source>;
+  link?: Id<StructureLink>; // TODO Populate if empty and link is at one distance
+};
+
+type TowerMemory = {
+  id: Id<StructureTower>;
+};
+
+type LinkMemory = {
+  id: Id<StructureLink>;
+  target: Id<StructureLink> | null; // Note: currently manual
+};
+
 // ------------------------------------------------------------------------------
 // This gets filled in at the very start of the first tick
 interface Memory {
   startingTick: number;
-
-  firstSpawnName: string;
-  firstRoomName: string;
 }
 
 interface RoomMemory {
   mode: Mode;
-  sources: Id<Source>[];
+  sources: SourceMemory[];
 
-  mainStorage: Id<StructureContainer> | null;
+  // TODO Instead of this, use a function?
+  mainStorage: Id<StructureContainer> | Id<StructureStorage> | null;
 
-  towers: Id<StructureTower>[];
-  links: Id<StructureLink>[];
+  // containers:
+  towers: TowerMemory[];
+  links: LinkMemory[];
 
   fortificationsMaxHits: number;
 }
 
-// TODO Use discriminated unions
+// TODO Use discriminated unions?
 interface CreepMemory {
   room: string;
   role: CreepRole;
   recharging: boolean;
-  sourceId?: Id<Source>;
-  counter?: number;
+  counter: number;
+  sourceId: Id<Source> | null;
 }
 
 // TODO Set up the spawn queue (weighted queue?)

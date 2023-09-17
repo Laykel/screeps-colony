@@ -13,27 +13,15 @@ const names: { [key in CreepRole]: string } = {
 };
 
 const bodyCost = (body: BodyPartConstant[]) =>
-  body
-    .map(part => {
-      switch (part) {
-        case 'tough':
-          return 10 as number;
-        case 'move':
-        case 'carry':
-          return 50;
-        case 'work':
-          return 100;
-        case 'attack':
-          return 80;
-        case 'ranged_attack':
-          return 150;
-        case 'heal':
-          return 250;
-        case 'claim':
-          return 600;
-      }
-    })
-    .reduce((previous, current) => previous + current);
+  body.map(part => BODYPART_COST[part]).reduce((previous, current) => previous + current);
+
+// harvester: balanced
+// miner: 1 move, 5 work
+// miner with link: 1 move, more than 5 work, some carry (to be calculated)
+// transporter: equal move and carry
+// operator: balanced
+// upgrader: balanced
+// upgrader with link: 1 move, 8-16 carry, many work
 
 // TODO Warning: no more than 50 parts are allowed
 const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstant[] } = {
@@ -125,7 +113,7 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
   const energyAvailable = spawn.room.energyAvailable;
 
   // Check if max energy capacity is reached, then spawn
-  if (energyAvailable >= spawn.room.energyCapacityAvailable / 2) {
+  if (energyAvailable >= spawn.room.energyCapacityAvailable) {
     const role = chooseRole(spawn.room);
 
     if (role === null) return;
@@ -137,6 +125,7 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
         memory: {
           role,
           recharging: true,
+          counter: 0,
           sourceId: assignedSourceId(spawn.room, role),
           room: spawn.room.name,
         },
@@ -145,9 +134,8 @@ export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
   }
 };
 
-const assignedSourceId = (room: Room, role: CreepRole): Id<Source> => {
-  // TODO Rework this. Maybe assign a "main source id" and "upgrader source id" manually...
-  const sourceIds = room.memory.sources;
+const assignedSourceId = (room: Room, role: CreepRole): Id<Source> | null => {
+  const sourceIds = room.memory.sources.map(source => source.id);
 
   switch (role) {
     case 'miner':
@@ -171,12 +159,10 @@ const assignedSourceId = (room: Room, role: CreepRole): Id<Source> => {
     case 'upgrader':
       return (
         sourceIds.filter(
-          id =>
-            id !==
-            Game.rooms[Memory.firstRoomName].controller?.pos.findClosestByPath(FIND_SOURCES)?.id,
+          id => id !== room.controller?.pos.findClosestByPath(FIND_SOURCES)?.id,
         )[0] ?? sourceIds[0]
       );
     default:
-      return sourceIds[0];
+      return null;
   }
 };

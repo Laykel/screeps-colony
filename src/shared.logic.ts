@@ -28,10 +28,20 @@ export const handleRecharging = (creep: Creep, message: string) => {
     creep.memory.recharging = true;
     creep.say('recharge');
   }
+
   if (creep.memory.recharging && creep.store.getFreeCapacity() === 0) {
     creep.memory.recharging = false;
     creep.say(message);
   }
+
+  // TODO Maybe handle this timeout with the ERROR_CODES from the withdraw functions and such
+  // if (creep.memory.recharging && creep.store[RESOURCE_ENERGY] !== 0) {
+  //   creep.memory.counter = creep.store[RESOURCE_ENERGY];
+  // }
+  // if (creep.memory.counter !== 0 && creep.memory.counter === creep.store[RESOURCE_ENERGY]) {
+  //   creep.memory.counter = 0;
+  //   creep.memory.recharging = false;
+  // }
 };
 
 export const pickupFromAssignedDrop = (creep: Creep) => {
@@ -40,7 +50,7 @@ export const pickupFromAssignedDrop = (creep: Creep) => {
     const source = Game.getObjectById(creep.memory.sourceId);
     const dropped = source && source.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
 
-    if (dropped && creep.pickup(dropped) == ERR_NOT_IN_RANGE) {
+    if (dropped && creep.pickup(dropped) === ERR_NOT_IN_RANGE) {
       creep.moveTo(dropped);
     }
   } else {
@@ -55,7 +65,7 @@ export const harvestFromSource = (creep: Creep) => {
     return;
   }
 
-  if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+  if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
     creep.moveTo(source);
   }
 };
@@ -73,7 +83,7 @@ export const withdrawFromContainer = (creep: Creep) => {
   if (!storage) {
     harvestFromSource(creep);
   } else {
-    if (creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    if (creep.withdraw(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       creep.moveTo(storage);
     }
   }
@@ -94,7 +104,7 @@ export const transferToMainStorage = (creep: Creep) => {
   if (mainStorageId) {
     const storage = Game.getObjectById(mainStorageId);
 
-    if (storage && creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    if (storage && creep.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
       creep.moveTo(storage);
     }
   }

@@ -10,15 +10,6 @@ export const runBuilderRole = (creep: Creep) => {
 
     if (!storage || storage.store.energy > 1200) {
       withdrawEnergy(creep);
-
-      if (creep.store.energy > 50) {
-        creep.memory.counter ? creep.memory.counter++ : (creep.memory.counter = 1);
-
-        if (creep.memory.counter > 5) {
-          creep.memory.counter = 0;
-          creep.memory.recharging = false;
-        }
-      }
     }
   } else {
     const target = findClosest(

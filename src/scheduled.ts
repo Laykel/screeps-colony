@@ -22,6 +22,11 @@ const checkAndUpdateState = (room: Room) => {
 
     if (containers.length > 0) room.memory.mainStorage = containers[0].id;
   }
+
+  // When a storage is built, switch to it as main storage
+  if (room.storage && room.memory.mainStorage !== room.storage.id) {
+    room.memory.mainStorage = room.storage.id;
+  }
 };
 
 const checkForTowers = (room: Room) => {
@@ -31,10 +36,10 @@ const checkForTowers = (room: Room) => {
 
   // Add any new tower to memory
   for (const tower of towers) {
-    const towerIds = room.memory.towers;
+    const towerIds = room.memory.towers.map(t => t.id);
 
     if (!towerIds.includes(tower.id)) {
-      towerIds.push(tower.id);
+      room.memory.towers.push({ id: tower.id });
     }
   }
 };

@@ -17,13 +17,6 @@ export const runMissionnerRole = (creep: Creep) => {
 
   if (creep.memory.recharging) {
     pickupFromAssignedDrop(creep);
-
-    // creep.memory.counter ? creep.memory.counter++ : (creep.memory.counter = 1);
-
-    // if (creep.memory.counter > 5) {
-    //   creep.memory.counter = 0;
-    //   creep.memory.recharging = false;
-    // }
   } else {
     const link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
       filter: structure => structure.structureType === STRUCTURE_LINK,
