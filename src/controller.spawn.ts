@@ -36,7 +36,7 @@ const bodies: { [key in CreepRole]: (energyAvailable: number) => BodyPartConstan
 
 // This strategy isn't great at every energy level...
 const balancedBody = (energy: number): BodyPartConstant[] => {
-  if (energy > 4000) return ballerOperator;
+  if (energy > 3450) return ballerOperator;
 
   const numberOfCarry = energy >= 800 ? 4 : 1;
   let energyLeft = energy - numberOfCarry * 50;
@@ -111,6 +111,18 @@ const chooseRole = (room: Room): CreepRole | null => {
 
 export const runSpawnController = (spawn: StructureSpawn, tick: number) => {
   const energyAvailable = spawn.room.energyAvailable;
+
+  if (Object.values(Memory.creeps).filter(creep => creep.room === spawn.room.name).length === 0) {
+    spawn.spawnCreep(balancedBody(energyAvailable), `Saviour-${tick - Memory.startingTick}`, {
+      memory: {
+        role: 'harvester',
+        recharging: true,
+        counter: 0,
+        sourceId: assignedSourceId(spawn.room, 'harvester'),
+        room: spawn.room.name,
+      },
+    });
+  }
 
   // Check if max energy capacity is reached, then spawn
   if (energyAvailable >= spawn.room.energyCapacityAvailable) {
